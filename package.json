@@ -1,0 +1,43 @@
+{
+  "name": "formulaire-evaluation",
+  "version": "1.0.0",
+  "description": "Système d'évaluation 100% digital sans papier",
+  "main": "server/server-mysql.js",
+  "scripts": {
+    "start": "node server/server-mysql.js",
+    "start:json": "node server/server.js",
+    "dev": "nodemon server/server-mysql.js",
+    "hash": "node src/scripts/utils/hash-password.js",
+    "test": "node tests/test-complet.js",
+    "test:api": "node tests/test-api.js",
+    "test:workflow": "node tests/test-workflow-complet.js",
+    "check:data": "node utils/check-data.js",
+    "check:users": "node utils/check-users.js",
+    "check:drafts": "node utils/check-drafts.js",
+    "migrate": "node database/migrations/run-migrations.js",
+    "deploy": "scripts-deployment/DEMARRER-SERVEUR.bat"
+  },
+  "keywords": [
+    "evaluation",
+    "digital",
+    "paperless",
+    "mysql",
+    "senico",
+    "workflow",
+    "n+1",
+    "n+2"
+  ],
+  "author": "SENICO SA",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mysql2": "^3.16.0",
+    "node-fetch": "^2.7.0",
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

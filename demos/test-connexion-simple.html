@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Connexion Serveur</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            color: #0c5460;
+            padding: 15px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>🔍 Test de Connexion au Serveur</h1>
+        <p>Cet outil teste la connexion entre votre navigateur et le serveur Node.js</p>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 1️⃣ : Ping Simple</h2>
+        <button onclick="testPing()">Tester la connexion de base</button>
+        <div id="result1"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 2️⃣ : API de Connexion N1</h2>
+        <button onclick="testLoginN1()">Tester avec awa.ndiaye</button>
+        <div id="result2"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 3️⃣ : API de Connexion N2</h2>
+        <button onclick="testLoginN2()">Tester avec mamadou.fall</button>
+        <div id="result3"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 4️⃣ : CORS et Headers</h2>
+        <button onclick="testCORS()">Tester les headers CORS</button>
+        <div id="result4"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>📊 Console JavaScript</h2>
+        <p>Ouvrez la console (F12) pour voir les détails complets</p>
+        <div id="console"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+        const consoleDiv = document.getElementById('console');
+
+        function log(message, type = 'info') {
+            console.log(message);
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            consoleDiv.appendChild(div);
+        }
+
+        async function testPing() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.innerHTML = '<p>⏳ Test en cours...</p>';
+            
+            try {
+                log('Test 1: Tentative de connexion au serveur...');
+                const response = await fetch('http://localhost:3001/api/evaluations', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                log(`Status: ${response.status} ${response.statusText}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>SUCCÈS !</strong><br>
+                            Serveur accessible<br>
+                            Status: ${response.status}<br>
+                            Évaluations trouvées: ${data.length}
+                        </div>
+                    `;
+                    log(`✅ Connexion réussie ! ${data.length} évaluations trouvées`, 'success');
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Erreur HTTP ${response.status}
+                        </div>
+                    `;
+                    log(`❌ Erreur HTTP ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ ERREUR: ${error.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ <strong>ERREUR DE CONNEXION</strong><br>
+                        ${error.message}<br><br>
+                        <strong>Vérifiez que:</strong>
+                        <ul>
+                            <li>WAMP est démarré (icône verte)</li>
+                            <li>Le serveur Node.js est actif (node server-mysql.js)</li>
+                            <li>Aucun firewall ne bloque le port 3001</li>
+                        </ul>
+                    </div>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+
+        async function testLoginN1() {
+            const resultDiv = document.getElementById('result2');
+            resultDiv.innerHTML = '<p>⏳ Test en cours...</p>';
+            
+            try {
+                log('Test 2: Connexion N1 avec awa.ndiaye...');
+                const response = await fetch('http://localhost:3001/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'awa.ndiaye',
+                        password: 'test123',
+                        role: 'N1'
+                    })
+                });
+                
+                log(`Status: ${response.status} ${response.statusText}`);
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>CONNEXION RÉUSSIE !</strong><br>
+                            Utilisateur: ${data.userName}<br>
+                            Rôle: ${data.role}<br>
+                            Email: ${data.email}<br>
+                            Token: ${data.token.substring(0, 20)}...
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    log(`✅ Connexion N1 réussie pour ${data.userName}`, 'success');
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ <strong>ÉCHEC DE CONNEXION</strong><br>
+                            ${data.message || data.error || 'Erreur inconnue'}
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    log(`❌ Échec: ${data.message || data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ ERREUR: ${error.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ <strong>ERREUR</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testLoginN2() {
+            const resultDiv = document.getElementById('result3');
+            resultDiv.innerHTML = '<p>⏳ Test en cours...</p>';
+            
+            try {
+                log('Test 3: Connexion N2 avec mamadou.fall...');
+                const response = await fetch('http://localhost:3001/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'mamadou.fall',
+                        password: 'test123',
+                        role: 'N2'
+                    })
+                });
+                
+                log(`Status: ${response.status} ${response.statusText}`);
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>CONNEXION RÉUSSIE !</strong><br>
+                            Utilisateur: ${data.userName}<br>
+                            Rôle: ${data.role}<br>
+                            Email: ${data.email}<br>
+                            Token: ${data.token.substring(0, 20)}...
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    log(`✅ Connexion N2 réussie pour ${data.userName}`, 'success');
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ <strong>ÉCHEC DE CONNEXION</strong><br>
+                            ${data.message || data.error || 'Erreur inconnue'}
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    log(`❌ Échec: ${data.message || data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ ERREUR: ${error.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ <strong>ERREUR</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testCORS() {
+            const resultDiv = document.getElementById('result4');
+            resultDiv.innerHTML = '<p>⏳ Test en cours...</p>';
+            
+            try {
+                log('Test 4: Vérification des headers CORS...');
+                const response = await fetch('http://localhost:3001/api/evaluations', {
+                    method: 'OPTIONS'
+                });
+                
+                const headers = {};
+                response.headers.forEach((value, key) => {
+                    headers[key] = value;
+                });
+                
+                log('Headers reçus:', 'info');
+                log(JSON.stringify(headers, null, 2), 'info');
+                
+                resultDiv.innerHTML = `
+                    <div class="info">
+                        ℹ️ <strong>Headers du serveur:</strong>
+                        <pre>${JSON.stringify(headers, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                log(`❌ ERREUR: ${error.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test automatique au chargement de la page
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Page chargée - Prêt pour les tests');
+            log(`URL de l'API configurée: ${API_URL}`);
+            
+            // Info système
+            const info = document.createElement('div');
+            info.className = 'info';
+            info.innerHTML = `
+                <strong>ℹ️ Informations système:</strong><br>
+                Navigateur: ${navigator.userAgent}<br>
+                URL actuelle: ${window.location.href}<br>
+                API cible: ${API_URL}
+            `;
+            consoleDiv.appendChild(info);
+        });
+    </script>
+</body>
+</html>

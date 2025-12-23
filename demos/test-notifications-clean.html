@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Nettoyage Messages - SENICO SA</title>
+    <link rel="stylesheet" href="notifications.css">
+    <script src="notifications.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .test-btn {
+            width: 100%;
+            padding: 14px 20px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%);
+            color: white;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 157, 95, 0.4);
+        }
+
+        .test-btn.error {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .before-after {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .before-after strong {
+            color: #4A9D5F;
+        }
+
+        .before-after .before {
+            color: #e74c3c;
+            font-family: monospace;
+        }
+
+        .before-after .after {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Test Nettoyage des Messages</h1>
+        <p class="subtitle">Vérification que les URLs localhost sont automatiquement masquées</p>
+
+        <div class="test-section">
+            <h3>
+                ❌ Messages d'Erreur avec localhost
+                <span class="success-badge">AUTO-NETTOYAGE</span>
+            </h3>
+            
+            <button class="test-btn error" onclick="testError1()">
+                Test: Erreur avec URL complète
+            </button>
+            <div class="before-after">
+                <strong>Avant:</strong> <span class="before">Erreur http://localhost:3001/api/evaluations</span><br>
+                <strong>Après:</strong> <span class="after">Erreur</span>
+            </div>
+
+            <button class="test-btn error" onclick="testError2()">
+                Test: Fetch failed localhost
+            </button>
+            <div class="before-after">
+                <strong>Avant:</strong> <span class="before">Failed to fetch from localhost:3001</span><br>
+                <strong>Après:</strong> <span class="after">Erreur de connexion au serveur. Veuillez vérifier votre connexion.</span>
+            </div>
+
+            <button class="test-btn error" onclick="testError3()">
+                Test: Erreur 404 localhost
+            </button>
+            <div class="before-after">
+                <strong>Avant:</strong> <span class="before">404 Not Found on http://localhost:3001/api/test</span><br>
+                <strong>Après:</strong> <span class="after">Ressource non trouvée.</span>
+            </div>
+
+            <button class="test-btn error" onclick="testError4()">
+                Test: Erreur 401 Unauthorized
+            </button>
+            <div class="before-after">
+                <strong>Avant:</strong> <span class="before">401 Unauthorized localhost:3001</span><br>
+                <strong>Après:</strong> <span class="after">Session expirée. Veuillez vous reconnecter.</span>
+            </div>
+
+            <button class="test-btn error" onclick="testError5()">
+                Test: Erreur 500 Server
+            </button>
+            <div class="before-after">
+                <strong>Avant:</strong> <span class="before">500 Internal Server Error http://127.0.0.1:3001</span><br>
+                <strong>Après:</strong> <span class="after">Erreur serveur. Veuillez réessayer plus tard.</span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>✅ Messages Normaux (Non affectés)</h3>
+            
+            <button class="test-btn" onclick="testNormal1()">
+                Test: Message de succès normal
+            </button>
+
+            <button class="test-btn" onclick="testNormal2()">
+                Test: Message avec email
+            </button>
+
+            <button class="test-btn" onclick="testNormal3()">
+                Test: Message avec chiffres
+            </button>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 Fonction utilitaire cleanErrorMessage()</h3>
+            
+            <button class="test-btn error" onclick="testUtility()">
+                Test: Utilisation de la fonction utilitaire
+            </button>
+            <div class="before-after">
+                <strong>Usage:</strong><br>
+                <code style="background: #2c3e50; color: white; padding: 10px; display: block; border-radius: 4px; margin-top: 8px;">
+try {<br>
+&nbsp;&nbsp;await fetch('...');<br>
+} catch (error) {<br>
+&nbsp;&nbsp;notify.error(cleanErrorMessage(error));<br>
+}
+                </code>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📢 Test Toast avec localhost</h3>
+            
+            <button class="test-btn" onclick="testToast()">
+                Test: Toast avec URL localhost
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Tests d'erreurs avec localhost
+        function testError1() {
+            notify.error("Erreur lors de la connexion à http://localhost:3001/api/evaluations - Veuillez réessayer");
+        }
+
+        function testError2() {
+            notify.error("Failed to fetch from localhost:3001/api/users - Network error");
+        }
+
+        function testError3() {
+            notify.error("404 Not Found on http://localhost:3001/api/test - La ressource demandée n'existe pas");
+        }
+
+        function testError4() {
+            notify.error("401 Unauthorized - Accès refusé localhost:3001/api/secure");
+        }
+
+        function testError5() {
+            notify.error("500 Internal Server Error on http://127.0.0.1:3001/api/process");
+        }
+
+        // Tests messages normaux
+        function testNormal1() {
+            notify.success("L'évaluation a été soumise avec succès !");
+        }
+
+        function testNormal2() {
+            notify.info("Un email a été envoyé à user@example.com");
+        }
+
+        function testNormal3() {
+            notify.warning("Il reste 3 évaluations en attente de validation");
+        }
+
+        // Test fonction utilitaire
+        function testUtility() {
+            const fakeError = {
+                message: "Network error: Failed to fetch http://localhost:3001/api/data"
+            };
+            
+            const cleanedMessage = cleanErrorMessage(fakeError);
+            notify.error(cleanedMessage);
+            
+            console.log("Message original:", fakeError.message);
+            console.log("Message nettoyé:", cleanedMessage);
+        }
+
+        // Test toast
+        function testToast() {
+            notify.toast("Connexion établie avec localhost:3001 - Données synchronisées", 5000);
+        }
+
+        // Message de bienvenue
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                notify.info(
+                    "Tous les messages contenant 'localhost' sont automatiquement nettoyés",
+                    "✨ Système de nettoyage actif"
+                );
+            }, 500);
+        });
+
+        // Démonstration dans la console
+        console.log('%c🧹 Tests de nettoyage des messages', 'color: #4A9D5F; font-size: 16px; font-weight: bold;');
+        console.log('%cMessages avec localhost seront automatiquement nettoyés:', 'color: #3498db; font-weight: bold;');
+        console.log('');
+        
+        const testMessages = [
+            "Erreur http://localhost:3001/api/test",
+            "Failed to fetch localhost:3001",
+            "Network error on http://127.0.0.1:3001/api/data",
+            "401 Unauthorized localhost:3001/api/secure"
+        ];
+        
+        testMessages.forEach(msg => {
+            console.log('Original:', msg);
+            console.log('Nettoyé:', cleanErrorMessage(msg));
+            console.log('---');
+        });
+    </script>
+</body>
+</html>

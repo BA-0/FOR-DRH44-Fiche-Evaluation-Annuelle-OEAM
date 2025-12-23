@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démo Notifications - SENICO SA</title>
+    <link rel="stylesheet" href="senico-theme.css">
+    <link rel="stylesheet" href="notifications.css">
+    <script src="notifications.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .demo-card h2 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .demo-card p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .demo-btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .demo-btn.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+
+        .demo-btn.error {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .demo-btn.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+
+        .demo-btn.info {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .demo-btn.primary {
+            background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%);
+            color: white;
+        }
+
+        .demo-btn.secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .demo-btn.danger {
+            background: linear-gradient(135deg, #E30613 0%, #b30510 100%);
+            color: white;
+        }
+
+        .code-example {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Démo Système de Notifications</h1>
+            <p>Testez toutes les fonctionnalités du nouveau système de notifications SENICO SA</p>
+        </div>
+
+        <div class="demo-grid">
+            <!-- Notifications Types -->
+            <div class="demo-card">
+                <h2>📢 Notifications</h2>
+                <p>Notifications toast avec icônes et animations</p>
+                <div class="btn-group">
+                    <button class="demo-btn success" onclick="demoSuccess()">
+                        ✓ Succès
+                    </button>
+                    <button class="demo-btn error" onclick="demoError()">
+                        ✕ Erreur
+                    </button>
+                    <button class="demo-btn warning" onclick="demoWarning()">
+                        ⚠ Avertissement
+                    </button>
+                    <button class="demo-btn info" onclick="demoInfo()">
+                        ℹ Information
+                    </button>
+                </div>
+                <div class="code-example">
+notify.success("Message");<br>
+notify.error("Message");<br>
+notify.warning("Message");<br>
+notify.info("Message");
+                </div>
+            </div>
+
+            <!-- Toasts -->
+            <div class="demo-card">
+                <h2>💬 Toasts Compacts</h2>
+                <p>Messages rapides en bas de page</p>
+                <div class="btn-group">
+                    <button class="demo-btn primary" onclick="demoToast()">
+                        💬 Toast Simple
+                    </button>
+                    <button class="demo-btn secondary" onclick="demoToastShort()">
+                        ⚡ Toast Court (2s)
+                    </button>
+                    <button class="demo-btn secondary" onclick="demoToastLong()">
+                        ⏱️ Toast Long (5s)
+                    </button>
+                </div>
+                <div class="code-example">
+notify.toast("Message", 3000);
+                </div>
+            </div>
+
+            <!-- Confirmations -->
+            <div class="demo-card">
+                <h2>❓ Confirmations</h2>
+                <p>Modales de confirmation élégantes</p>
+                <div class="btn-group">
+                    <button class="demo-btn primary" onclick="demoConfirm()">
+                        ❓ Confirmation Simple
+                    </button>
+                    <button class="demo-btn danger" onclick="demoDelete()">
+                        🗑️ Confirmation Suppression
+                    </button>
+                    <button class="demo-btn warning" onclick="demoLogout()">
+                        🚪 Confirmation Déconnexion
+                    </button>
+                    <button class="demo-btn info" onclick="demoCustom()">
+                        ⭐ Confirmation Personnalisée
+                    </button>
+                </div>
+                <div class="code-example">
+const ok = await confirmDialog.confirm("Message");<br>
+if (ok) { /* Action */ }
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="demo-card">
+                <h2>⏳ Chargement</h2>
+                <p>Écran de chargement avec spinner</p>
+                <div class="btn-group">
+                    <button class="demo-btn primary" onclick="demoLoading()">
+                        🔄 Chargement 3s
+                    </button>
+                    <button class="demo-btn secondary" onclick="demoLoadingCustom()">
+                        📦 Chargement Personnalisé
+                    </button>
+                    <button class="demo-btn info" onclick="demoLoadingPromise()">
+                        ⚡ Wrapper Promesse
+                    </button>
+                </div>
+                <div class="code-example">
+loading.show("Chargement...");<br>
+await operation();<br>
+loading.hide();
+                </div>
+            </div>
+
+            <!-- Scénarios Réels -->
+            <div class="demo-card">
+                <h2>🎯 Scénarios Réels</h2>
+                <p>Exemples d'utilisation pratique</p>
+                <div class="btn-group">
+                    <button class="demo-btn success" onclick="demoSubmitForm()">
+                        📝 Soumission Formulaire
+                    </button>
+                    <button class="demo-btn danger" onclick="demoDeleteItem()">
+                        🗑️ Suppression Élément
+                    </button>
+                    <button class="demo-btn info" onclick="demoSaveAuto()">
+                        💾 Sauvegarde Auto
+                    </button>
+                    <button class="demo-btn warning" onclick="demoValidation()">
+                        ⚠️ Validation Formulaire
+                    </button>
+                </div>
+            </div>
+
+            <!-- Actions Multiples -->
+            <div class="demo-card">
+                <h2>🚀 Actions Avancées</h2>
+                <p>Combinaisons et séquences</p>
+                <div class="btn-group">
+                    <button class="demo-btn primary" onclick="demoSequence()">
+                        📊 Séquence Notifications
+                    </button>
+                    <button class="demo-btn info" onclick="demoMultiple()">
+                        🎭 Notifications Multiples
+                    </button>
+                    <button class="demo-btn danger" onclick="demoClearAll()">
+                        🧹 Effacer Tout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>✨ Système de Notifications SENICO SA - Version 1.0</p>
+            <p>📚 Consultez GUIDE-NOTIFICATIONS.md pour plus d'informations</p>
+        </div>
+    </div>
+
+    <script>
+        // Notifications simples
+        function demoSuccess() {
+            notify.success("L'opération a été effectuée avec succès !", "✅ Succès");
+        }
+
+        function demoError() {
+            notify.error("Une erreur s'est produite lors du traitement.", "❌ Erreur");
+        }
+
+        function demoWarning() {
+            notify.warning("Attention ! Certains champs sont incomplets.", "⚠️ Avertissement");
+        }
+
+        function demoInfo() {
+            notify.info("Nouvelle version disponible. Pensez à mettre à jour.", "ℹ️ Information");
+        }
+
+        // Toasts
+        function demoToast() {
+            notify.toast("Message rapide affiché 3 secondes");
+        }
+
+        function demoToastShort() {
+            notify.toast("⚡ Message court (2s)", 2000);
+        }
+
+        function demoToastLong() {
+            notify.toast("⏱️ Message long (5s)", 5000);
+        }
+
+        // Confirmations
+        async function demoConfirm() {
+            const confirmed = await confirmDialog.confirm(
+                "Voulez-vous vraiment effectuer cette action ?",
+                "Confirmation requise"
+            );
+            
+            if (confirmed) {
+                notify.success("Action confirmée !");
+            } else {
+                notify.toast("Action annulée");
+            }
+        }
+
+        async function demoDelete() {
+            const confirmed = await confirmDialog.delete("cet élément");
+            
+            if (confirmed) {
+                notify.success("Élément supprimé avec succès");
+            } else {
+                notify.toast("Suppression annulée");
+            }
+        }
+
+        async function demoLogout() {
+            const confirmed = await confirmDialog.logout();
+            
+            if (confirmed) {
+                notify.info("Déconnexion en cours...");
+            } else {
+                notify.toast("Vous restez connecté");
+            }
+        }
+
+        async function demoCustom() {
+            const confirmed = await confirmDialog.show({
+                title: "Envoyer la notification ?",
+                message: "Cette action enverra un email à tous les utilisateurs N+2.<br><br>Voulez-vous continuer ?",
+                icon: "📧",
+                confirmText: "Envoyer maintenant",
+                cancelText: "Annuler",
+                type: "primary"
+            });
+            
+            if (confirmed) {
+                notify.success("Notification envoyée à tous les N+2");
+            }
+        }
+
+        // Loading
+        function demoLoading() {
+            loading.show("Chargement en cours...");
+            
+            setTimeout(() => {
+                loading.hide();
+                notify.success("Chargement terminé !");
+            }, 3000);
+        }
+
+        function demoLoadingCustom() {
+            loading.show("📦 Téléchargement des fichiers...");
+            
+            setTimeout(() => {
+                loading.hide();
+                notify.success("Fichiers téléchargés avec succès");
+            }, 3000);
+        }
+
+        async function demoLoadingPromise() {
+            const fakeApiCall = () => new Promise(resolve => {
+                setTimeout(() => resolve({ data: "Données chargées" }), 2500);
+            });
+            
+            try {
+                const result = await loading.wrap(
+                    fakeApiCall(),
+                    "⚡ Récupération des données..."
+                );
+                notify.success("Données récupérées avec succès !");
+            } catch (error) {
+                notify.error("Erreur lors du chargement");
+            }
+        }
+
+        // Scénarios réels
+        async function demoSubmitForm() {
+            const confirmed = await confirmDialog.confirm(
+                "Voulez-vous soumettre ce formulaire ?<br><br>Vous ne pourrez plus le modifier après validation.",
+                "Soumission du formulaire"
+            );
+            
+            if (!confirmed) {
+                notify.toast("Soumission annulée");
+                return;
+            }
+            
+            loading.show("Soumission en cours...");
+            
+            setTimeout(() => {
+                loading.hide();
+                notify.success("Formulaire soumis avec succès ! Redirection...");
+                
+                setTimeout(() => {
+                    notify.info("Vous allez être redirigé vers le tableau de bord");
+                }, 2000);
+            }, 2000);
+        }
+
+        async function demoDeleteItem() {
+            const confirmed = await confirmDialog.delete("cette évaluation");
+            
+            if (!confirmed) return;
+            
+            loading.show("Suppression en cours...");
+            
+            setTimeout(() => {
+                loading.hide();
+                notify.success("Évaluation supprimée avec succès");
+            }, 1500);
+        }
+
+        function demoSaveAuto() {
+            notify.toast("💾 Sauvegarde automatique effectuée", 2000);
+        }
+
+        function demoValidation() {
+            notify.warning("3 champ(s) obligatoire(s) manquant(s)", "⚠️ Formulaire incomplet");
+        }
+
+        // Actions avancées
+        function demoSequence() {
+            notify.info("Étape 1/3 : Validation des données...");
+            
+            setTimeout(() => {
+                notify.info("Étape 2/3 : Traitement en cours...");
+            }, 1500);
+            
+            setTimeout(() => {
+                notify.info("Étape 3/3 : Finalisation...");
+            }, 3000);
+            
+            setTimeout(() => {
+                notify.success("Processus terminé avec succès !");
+            }, 4500);
+        }
+
+        function demoMultiple() {
+            notify.success("Fichier 1 téléchargé");
+            
+            setTimeout(() => {
+                notify.success("Fichier 2 téléchargé");
+            }, 500);
+            
+            setTimeout(() => {
+                notify.success("Fichier 3 téléchargé");
+            }, 1000);
+            
+            setTimeout(() => {
+                notify.info("Tous les fichiers ont été téléchargés !", "✓ Téléchargement complet");
+            }, 1500);
+        }
+
+        function demoClearAll() {
+            // D'abord créer plusieurs notifications
+            notify.info("Notification 1");
+            notify.warning("Notification 2");
+            notify.success("Notification 3");
+            
+            // Puis les effacer après 2 secondes
+            setTimeout(() => {
+                notify.clear();
+                notify.toast("Toutes les notifications ont été effacées");
+            }, 2000);
+        }
+
+        // Message de bienvenue
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                notify.info(
+                    "Cliquez sur les boutons pour tester les différents types de notifications",
+                    "👋 Bienvenue dans la démo"
+                );
+            }, 500);
+        });
+    </script>
+</body>
+</html>

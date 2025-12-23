@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Guide d'Exécution des Tests</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .content { padding: 40px; }
+        .step {
+            background: #f5f5f5;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            position: relative;
+        }
+        .step-number {
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #4caf50;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3em;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+        .step h2 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .step p {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .step ol {
+            margin-left: 25px;
+            line-height: 2;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .btn-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .btn-warning { background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%); }
+        .warning-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning-box h3 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+        .code-box {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .success-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+        }
+        .checklist li {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #2196f3;
+        }
+        .checklist li::before {
+            content: "☐ ";
+            font-size: 1.5em;
+            margin-right: 10px;
+            color: #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Guide d'Exécution des Tests</h1>
+            <p>Tests Complets du Formulaire d'Évaluation</p>
+        </div>
+        
+        <div class="content">
+            <div class="warning-box">
+                <h3>⚠️ IMPORTANT - À FAIRE DANS L'ORDRE</h3>
+                <p>Suivez ces étapes <strong>dans l'ordre exact</strong> pour que tous les tests fonctionnent correctement.</p>
+            </div>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <h2>📋 Exécuter le Script SQL</h2>
+                <p><strong>phpMyAdmin est déjà ouvert dans votre navigateur.</strong></p>
+                <ol>
+                    <li>Cliquez sur l'onglet <strong>"SQL"</strong> en haut</li>
+                    <li>Ouvrez le fichier <code>reparer-base.sql</code> avec le Bloc-notes</li>
+                    <li>Sélectionnez TOUT (Ctrl+A) et copiez (Ctrl+C)</li>
+                    <li>Collez dans la zone de texte SQL de phpMyAdmin (Ctrl+V)</li>
+                    <li>Cliquez sur <strong>"Exécuter"</strong> en bas à droite</li>
+                </ol>
+                
+                <div class="success-box" style="margin-top: 20px;">
+                    <h3>✅ Résultat attendu :</h3>
+                    <p>Vous devez voir 5 lignes avec des ✅ :</p>
+                    <div class="code-box">
+✅ Utilisateurs créés - Total: 7
+✅ Évaluations créées - Total: 5
+✅ Table audit_log - Statut: Existe
+✅ Procédure sp_submit_evaluation - Statut: Existe
+✅ Procédure sp_validate_evaluation - Statut: Existe
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="copyFilePath()">📂 Copier le chemin du fichier SQL</button>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <h2>✅ Vérifier que le serveur est démarré</h2>
+                <p>Une fenêtre "Serveur Node.js" devrait s'être ouverte automatiquement.</p>
+                <p>Vous devez voir ce message dans la fenêtre :</p>
+                <div class="code-box">
+🚀 SERVEUR D'ÉVALUATION DÉMARRÉ
+📍 URL: http://localhost:3001
+📊 Base de données: MySQL (WAMP)
+                </div>
+                
+                <div class="warning-box" style="margin-top: 15px;">
+                    <p><strong>Si le serveur n'est pas démarré :</strong></p>
+                    <ol>
+                        <li>Ouvrez un nouveau terminal CMD</li>
+                        <li>Tapez : <code>cd "c:\Users\cheri\Documents\SENICO\formulaire evaluation"</code></li>
+                        <li>Tapez : <code>npm start</code></li>
+                    </ol>
+                </div>
+                
+                <a href="http://localhost:3001/login.html" target="_blank" class="btn btn-success">🔗 Tester le Serveur</a>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <h2>🧪 Lancer les Tests Automatisés</h2>
+                <p>Une fois que le SQL est exécuté ET que le serveur est démarré, lancez les tests :</p>
+                
+                <button class="btn btn-warning" onclick="runTests()">🚀 LANCER TOUS LES TESTS</button>
+                
+                <p style="margin-top: 20px;"><strong>Les tests vont vérifier :</strong></p>
+                <ul class="checklist">
+                    <li>🔐 Authentification (9 tests)</li>
+                    <li>📊 Récupération des évaluations (6 tests)</li>
+                    <li>📝 Création d'évaluation (2 tests)</li>
+                    <li>✏️ Modification d'évaluation (2 tests)</li>
+                    <li>✅ Soumission à N+2 (3 tests)</li>
+                    <li>🎉 Validation par N+2 (3 tests)</li>
+                    <li>📋 Évaluations existantes (5 tests)</li>
+                    <li>🔄 Workflow complet (5 tests)</li>
+                    <li>🔒 Sécurité et validation (4 tests)</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <h2>📊 Voir le Rapport des Tests</h2>
+                <p>À la fin des tests, un rapport HTML sera automatiquement généré et ouvert.</p>
+                <p>Le rapport vous montrera :</p>
+                <ul style="margin-left: 25px; margin-top: 10px;">
+                    <li>Nombre total de tests exécutés</li>
+                    <li>Nombre de tests réussis ✅</li>
+                    <li>Nombre de tests échoués ❌</li>
+                    <li>Taux de réussite en pourcentage</li>
+                    <li>Détails par catégorie</li>
+                </ul>
+                
+                <button class="btn" onclick="openReport()" style="margin-top: 15px;">📄 Ouvrir le Rapport</button>
+            </div>
+
+            <div class="success-box" style="margin-top: 30px;">
+                <h3>🎯 Résultat Attendu</h3>
+                <p><strong>Si tout fonctionne correctement, vous devriez avoir :</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    <li>✅ 29 tests exécutés</li>
+                    <li>✅ Taux de réussite ≥ 95%</li>
+                    <li>✅ 7 utilisateurs créés et fonctionnels</li>
+                    <li>✅ 5 évaluations avec données complètes</li>
+                    <li>✅ Workflow complet testé (Draft → Soumis → Validé)</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 10px;">
+                <h3 style="margin-bottom: 20px;">🚀 Actions Rapides</h3>
+                <a href="http://localhost/phpmyadmin/" target="_blank" class="btn">🌐 phpMyAdmin</a>
+                <a href="http://localhost:3001/login.html" target="_blank" class="btn btn-success">🔑 Page de Connexion</a>
+                <button class="btn btn-warning" onclick="runTests()">🧪 Lancer les Tests</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyFilePath() {
+            const path = 'c:\\Users\\cheri\\Documents\\SENICO\\formulaire evaluation\\reparer-base.sql';
+            navigator.clipboard.writeText(path).then(() => {
+                alert('✅ Chemin copié !\n\n' + path + '\n\nCollez-le dans l\'Explorateur Windows pour ouvrir le fichier.');
+            }).catch(() => {
+                alert('Chemin du fichier :\n\n' + path);
+            });
+        }
+
+        function runTests() {
+            if (confirm('⚠️ IMPORTANT:\n\n1. Avez-vous exécuté le script SQL dans phpMyAdmin ?\n2. Le serveur Node.js est-il démarré ?\n\nSi OUI aux deux questions, cliquez OK pour lancer les tests.')) {
+                alert('🧪 Les tests vont démarrer...\n\nOuvrez le terminal pour voir la progression en temps réel.\n\nLe rapport s\'ouvrira automatiquement à la fin.');
+                
+                // Lancer les tests via un nouveau terminal
+                const command = 'cd "c:\\Users\\cheri\\Documents\\SENICO\\formulaire evaluation" && node test-complet.js';
+                
+                // On ne peut pas lancer de terminal depuis le navigateur
+                // mais on affiche les instructions
+                alert('📋 OUVREZ UN NOUVEAU TERMINAL CMD ET EXÉCUTEZ :\n\n' +
+                      'cd "c:\\Users\\cheri\\Documents\\SENICO\\formulaire evaluation"\n' +
+                      'node test-complet.js\n\n' +
+                      'Le rapport s\'ouvrira automatiquement.');
+            }
+        }
+
+        function openReport() {
+            window.open('RAPPORT-TESTS.html', '_blank');
+        }
+
+        // Auto-vérification au chargement
+        window.onload = function() {
+            fetch('http://localhost:3001/api/evaluations/pending')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelector('.step:nth-child(3)').style.borderLeftColor = '#4caf50';
+                        document.querySelector('.step:nth-child(3) .step-number').style.background = '#4caf50';
+                    }
+                })
+                .catch(() => {
+                    console.log('Serveur pas encore démarré ou base non initialisée');
+                });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+node_modules/
+.env
+*.log
+npm-debug.log*
+database/seeds/*.json
+database/seeds/*.sql
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/

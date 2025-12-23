@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Modal</title>
+    <style>
+        .email-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }
+        .email-modal.show { display: flex; align-items: center; justify-content: center; }
+        .email-modal-content { background-color: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 500px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Test Modal</h1>
+    <button onclick="showModal()">Afficher Modal</button>
+    
+    <div id="emailModal" class="email-modal">
+        <div class="email-modal-content">
+            <h2>📧 Test</h2>
+            <p>Si vous voyez ce message, le modal fonctionne!</p>
+            <input type="email" id="emailModalInput" placeholder="test@test.com">
+            <button onclick="hideModal()">Fermer</button>
+        </div>
+    </div>
+    
+    <script>
+        console.log('Script chargé');
+        
+        function showModal() {
+            console.log('showModal appelée');
+            const modal = document.getElementById('emailModal');
+            console.log('Modal:', modal);
+            if (modal) {
+                modal.classList.add('show');
+                console.log('Classes:', modal.className);
+            }
+        }
+        
+        function hideModal() {
+            const modal = document.getElementById('emailModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+        
+        // Auto-affichage au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM chargé');
+            setTimeout(() => {
+                console.log('Affichage automatique du modal...');
+                showModal();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

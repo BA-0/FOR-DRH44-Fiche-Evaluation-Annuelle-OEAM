@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Gestion des Brouillons - SENICO SA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/notifications.css">
+    <link rel="stylesheet" href="../styles/navigation.css">
+    <script src="../scripts/core/config.js"></script>
+    <script src="../scripts/core/security.js"></script>
+    <script src="../scripts/core/notifications.js"></script>
+    <script src="../scripts/core/navigation.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #4A9D5F;
+            --primary-light: #6BC17D;
+            --secondary: #E30613;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo { display: flex; align-items: center; gap: 15px; text-decoration: none; color: white; }
+        .logo-icon { width: 50px; height: 50px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--primary); font-weight: bold; }
+        .logo h1 { font-size: 24px; margin: 0; }
+        
+        .header-actions { display: flex; gap: 15px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: white; color: var(--primary); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 30px; }
+        
+        .page-header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .page-header h2 { font-size: 32px; color: var(--dark); margin-bottom: 10px; }
+        .page-header p { color: #7f8c8d; }
+        
+        .search-bar {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+        
+        .search-grid { display: grid; grid-template-columns: 1fr 200px 150px; gap: 15px; }
+        
+        .search-input {
+            position: relative;
+        }
+        
+        .search-input input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .search-input input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 157, 95, 0.1);
+        }
+        
+        .search-input i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        .search-grid select {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        
+        .btn-search {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 157, 95, 0.4);
+        }
+        
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        
+        .stat-icon.warning { background: linear-gradient(135deg, #f39c12, #f1c40f); color: white; }
+        
+        .stat-content h3 { font-size: 28px; color: var(--dark); margin: 0; }
+        .stat-content p { font-size: 13px; color: #7f8c8d; margin: 5px 0 0 0; }
+        
+        .drafts-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .draft-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .draft-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .draft-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .draft-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .draft-badge {
+            padding: 6px 15px;
+            background: #fff3cd;
+            color: #856404;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .draft-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .draft-detail {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .draft-detail-label { font-size: 11px; color: #7f8c8d; margin-bottom: 4px; }
+        .draft-detail-value { font-size: 14px; font-weight: 600; color: var(--dark); }
+        
+        .draft-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-edit { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; }
+        .btn-delete { background: linear-gradient(135deg, var(--danger), #c0392b); color: white; }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .empty-state i { font-size: 80px; color: #ecf0f1; margin-bottom: 20px; }
+        .empty-state h3 { font-size: 24px; color: var(--dark); margin-bottom: 10px; }
+        .empty-state p { color: #7f8c8d; }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s;
+        }
+        
+        .alert.show { display: flex; align-items: center; gap: 15px; }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert-success { background: #d1e7dd; border: 2px solid #0f5132; color: #0f5132; }
+        .alert-error { background: #f8d7da; border: 2px solid #842029; color: #842029; }
+        .alert-info { background: #cfe2ff; border: 2px solid #084298; color: #084298; }
+        
+        @media (max-width: 768px) {
+            .search-grid { grid-template-columns: 1fr; }
+            .draft-details { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <button class="back-button" onclick="navigateBack()" title="Retour à la page précédente">
+                <span class="back-button-icon">←</span>
+                <span class="back-button-text">Retour</span>
+            </button>
+            <a href="dashboard.html" class="logo">
+                <div class="logo-icon">S</div>
+                <h1>SENICO SA - Brouillons</h1>
+            </a>
+            <div class="header-actions">
+                <a href="dashboard.html" class="btn btn-primary">
+                    <i class="fas fa-home"></i> Tableau de Bord
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="alertContainer"></div>
+        
+        <div class="page-header">
+            <h2><i class="fas fa-folder-open"></i> Mes Brouillons</h2>
+            <p>Gérez vos évaluations en cours de rédaction</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <div class="search-grid">
+                <div class="search-input">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Rechercher par nom, direction, service...">
+                </div>
+                <select id="sortBy">
+                    <option value="recent">Plus récent</option>
+                    <option value="oldest">Plus ancien</option>
+                    <option value="name">Par nom</option>
+                </select>
+                <button class="btn-search" onclick="loadDrafts()">
+                    <i class="fas fa-search"></i> Rechercher
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+            <div class="stat-box">
+                <div class="stat-icon warning">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="draftCount">0</h3>
+                    <p>Brouillons enregistrés</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p style="color: var(--primary); font-weight: 600;">Chargement des brouillons...</p>
+        </div>
+
+        <!-- Drafts List -->
+        <div id="draftsContainer" class="drafts-grid" style="display: none;"></div>
+        
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="fas fa-folder-open"></i>
+            <h3>Aucun brouillon</h3>
+            <p>Vous n'avez pas de brouillon enregistré pour le moment.</p>
+            <a href="formulaire-online.html" class="btn btn-primary" style="margin-top: 20px;">
+                <i class="fas fa-plus"></i> Créer une évaluation
+            </a>
+        </div>
+    </div>
+
+    <script src="../scripts/pages/drafts-manager.js"></script>
+</body>
+</html>

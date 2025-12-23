@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests API - Système d'Évaluation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        .test-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { background: #d4edda; border-left: 5px solid #28a745; color: #155724; }
+        .error { background: #f8d7da; border-left: 5px solid #dc3545; color: #721c24; }
+        .info { background: #d1ecf1; border-left: 5px solid #17a2b8; color: #0c5460; }
+        .warning { background: #fff3cd; border-left: 5px solid #ffc107; color: #856404; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Tests API - Système d'Évaluation</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="testsTotal">0/6</div>
+                <div class="stat-label">Tests réussis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="evaluationId">-</div>
+                <div class="stat-label">ID Évaluation</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="scoreFinal">-</div>
+                <div class="stat-label">Score Final</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress">0%</div>
+        </div>
+
+        <!-- TEST 1 -->
+        <div class="test-section">
+            <h2>📝 TEST 1 : Connexion N+1 (Évaluateur)</h2>
+            <button onclick="test1()">🚀 Exécuter Test 1</button>
+            <button onclick="runAllTests()">▶️ Exécuter TOUS les tests</button>
+            <div id="result1"></div>
+        </div>
+
+        <!-- TEST 2 -->
+        <div class="test-section">
+            <h2>📝 TEST 2 : Création d'évaluation</h2>
+            <button onclick="test2()" id="btn2" disabled>🚀 Exécuter Test 2</button>
+            <div id="result2"></div>
+        </div>
+
+        <!-- TEST 3 -->
+        <div class="test-section">
+            <h2>📝 TEST 3 : Récupération complète</h2>
+            <button onclick="test3()" id="btn3" disabled>🚀 Exécuter Test 3</button>
+            <div id="result3"></div>
+        </div>
+
+        <!-- TEST 4 -->
+        <div class="test-section">
+            <h2>📝 TEST 4 : Soumission à N+2</h2>
+            <button onclick="test4()" id="btn4" disabled>🚀 Exécuter Test 4</button>
+            <div id="result4"></div>
+        </div>
+
+        <!-- TEST 5 -->
+        <div class="test-section">
+            <h2>📝 TEST 5 : Connexion N+2 (Validateur)</h2>
+            <button onclick="test5()" id="btn5" disabled>🚀 Exécuter Test 5</button>
+            <div id="result5"></div>
+        </div>
+
+        <!-- TEST 6 -->
+        <div class="test-section">
+            <h2>📝 TEST 6 : Liste évaluations en attente</h2>
+            <button onclick="test6()" id="btn6" disabled>🚀 Exécuter Test 6</button>
+            <div id="result6"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+        let evaluationId = null;
+        let testsReussis = 0;
+
+        const evaluationTest = {
+            dateEvaluation: '2025-12-19',
+            direction: 'Direction des Systèmes d\'Information',
+            service: 'Développement',
+            evaluateurNom: 'Bougar DIOUF',
+            evaluateurFonction: 'Chef de Service',
+            evalueNom: 'Mamadou DIALLO',
+            evalueFonction: 'Développeur Senior',
+            categorie: 'A',
+            emailN2: 'ousseynou.seck@senico.sn',
+            annee: 2025,
+            objectifs: [
+                { objectif: 'Développer module gestion', indicateur: 'Livraison délais', taux: '100' },
+                { objectif: 'Former 2 juniors', indicateur: 'Nombre formations', taux: '80' },
+                { objectif: 'Optimiser performances', indicateur: 'Temps réponse -30%', taux: '100' },
+                { objectif: 'Documentation technique', indicateur: 'Pages documentées', taux: '90' },
+                { objectif: 'Veille technologique', indicateur: 'Présentations', taux: '85' }
+            ],
+            competences: {
+                qualitesProfessionnelles: Array(10).fill(0).map((_, i) => ({ critere: i+1, score: '90' })),
+                qualitesPersonnelles: Array(10).fill(0).map((_, i) => ({ critere: i+1, score: '85' })),
+                qualitesRelationnelles: Array(10).fill(0).map((_, i) => ({ critere: i+1, score: '92' }))
+            },
+            scores: { scoreObjectifs: 91, scoreCompetences: 89, scoreFinal: 90 },
+            observations: {
+                evaluateurPointsForts: ['Excellent', 'Autonome', 'Initiative'],
+                evaluateurPointsFaibles: ['Gestion temps'],
+                evaluateurAxesProgres: ['Formation management'],
+                evalueReussites: ['Projet en avance'],
+                evalueDifficultés: ['Charge travail'],
+                evalueSouhaits: ['Formation certifiante']
+            },
+            signatures: {
+                N: { data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', nom: 'Mamadou DIALLO', date: '2025-12-19' },
+                N1: { data: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', nom: 'Bougar DIOUF', date: '2025-12-19' }
+            },
+            status: 'draft'
+        };
+
+        function updateProgress() {
+            const percent = (testsReussis / 6) * 100;
+            document.getElementById('progress').style.width = percent + '%';
+            document.getElementById('progress').textContent = Math.round(percent) + '%';
+            document.getElementById('testsTotal').textContent = testsReussis + '/6';
+        }
+
+        function showResult(testNum, html, type = 'info') {
+            const el = document.getElementById('result' + testNum);
+            el.className = 'result ' + type;
+            el.innerHTML = html;
+        }
+
+        async function test1() {
+            showResult(1, '⏳ Test en cours...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'evaluateur', password: 'eval123', role: 'N1' })
+                });
+                const result = await response.json();
+                
+                if (result.token) {
+                    testsReussis++;
+                    updateProgress();
+                    document.getElementById('btn2').disabled = false;
+                    showResult(1, `✅ SUCCÈS!\n\nUtilisateur: ${result.userName}\nEmail: ${result.email}\nRôle: ${result.role}\nToken reçu: ${result.token.substring(0, 30)}...`, 'success');
+                } else {
+                    showResult(1, `❌ ÉCHEC\n\nErreur: ${result.error || 'Pas de token reçu'}`, 'error');
+                }
+            } catch (error) {
+                showResult(1, `❌ ERREUR\n\n${error.message}\n\nVérifiez que le serveur est démarré!`, 'error');
+            }
+        }
+
+        async function test2() {
+            showResult(2, '⏳ Test en cours...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/evaluations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(evaluationTest)
+                });
+                const result = await response.json();
+                
+                if (result.success && result.evaluation) {
+                    evaluationId = result.evaluation.id;
+                    testsReussis++;
+                    updateProgress();
+                    document.getElementById('btn3').disabled = false;
+                    document.getElementById('evaluationId').textContent = evaluationId;
+                    document.getElementById('scoreFinal').textContent = evaluationTest.scores.scoreFinal + '%';
+                    showResult(2, `✅ SUCCÈS!\n\nID: ${evaluationId}\nÉvalué: ${evaluationTest.evalueNom}\nDirection: ${evaluationTest.direction}\nScore: ${evaluationTest.scores.scoreFinal}%\nStatut: draft`, 'success');
+                } else {
+                    showResult(2, `❌ ÉCHEC\n\nErreur: ${result.error || 'Pas de données reçues'}`, 'error');
+                }
+            } catch (error) {
+                showResult(2, `❌ ERREUR\n\n${error.message}`, 'error');
+            }
+        }
+
+        async function test3() {
+            showResult(3, '⏳ Test en cours...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/evaluations/${evaluationId}/full`);
+                const result = await response.json();
+                
+                if (result.success && result.evaluation) {
+                    testsReussis++;
+                    updateProgress();
+                    document.getElementById('btn4').disabled = false;
+                    const eval1 = result.evaluation;
+                    showResult(3, `✅ SUCCÈS!\n\nObjectifs: ${eval1.objectifs?.length || 0} items\nCompétences pro: ${eval1.competences?.qualitesProfessionnelles?.length || 0} critères\nCompétences perso: ${eval1.competences?.qualitesPersonnelles?.length || 0} critères\nCompétences rel: ${eval1.competences?.qualitesRelationnelles?.length || 0} critères\nSignature N: ${!!eval1.signatures?.N}\nSignature N1: ${!!eval1.signatures?.N1}\nStatut: ${eval1.status}`, 'success');
+                } else {
+                    showResult(3, `❌ ÉCHEC\n\nErreur: ${result.error || 'Pas de données'}`, 'error');
+                }
+            } catch (error) {
+                showResult(3, `❌ ERREUR\n\n${error.message}`, 'error');
+            }
+        }
+
+        async function test4() {
+            showResult(4, '⏳ Test en cours...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/evaluations/${evaluationId}/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: 1 })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    testsReussis++;
+                    updateProgress();
+                    document.getElementById('btn5').disabled = false;
+                    showResult(4, `✅ SUCCÈS!\n\n${result.message}\nEmail N+2: ${evaluationTest.emailN2}\nStatut: submitted`, 'success');
+                    // Attendre 1 seconde pour la BD
+                    await new Promise(r => setTimeout(r, 1000));
+                } else {
+                    showResult(4, `❌ ÉCHEC\n\nErreur: ${result.error}\n\nVérifiez que la procédure sp_submit_evaluation existe!`, 'error');
+                }
+            } catch (error) {
+                showResult(4, `❌ ERREUR\n\n${error.message}`, 'error');
+            }
+        }
+
+        async function test5() {
+            showResult(5, '⏳ Test en cours...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'ousseynou.seck', password: 'valid123', role: 'N2' })
+                });
+                const result = await response.json();
+                
+                if (result.token) {
+                    testsReussis++;
+                    updateProgress();
+                    document.getElementById('btn6').disabled = false;
+                    showResult(5, `✅ SUCCÈS!\n\nUtilisateur: ${result.userName}\nEmail: ${result.email}\nRôle: ${result.role}`, 'success');
+                } else {
+                    showResult(5, `❌ ÉCHEC\n\nErreur: ${result.error || 'Pas de token'}`, 'error');
+                }
+            } catch (error) {
+                showResult(5, `❌ ERREUR\n\n${error.message}`, 'error');
+            }
+        }
+
+        async function test6() {
+            showResult(6, '⏳ Test en cours...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/evaluations/pending/${encodeURIComponent(evaluationTest.emailN2)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    testsReussis++;
+                    updateProgress();
+                    const evaluations = result.evaluations || [];
+                    if (evaluations.length > 0) {
+                        const e = evaluations[0];
+                        showResult(6, `✅ SUCCÈS!\n\nNombre d'évaluations: ${evaluations.length}\n\n📋 Détails:\nID: ${e.id}\nÉvalué: ${e.evalue_nom}\nÉvaluateur: ${e.evaluateur_nom}\nDirection: ${e.direction}\nService: ${e.service}\nAnnée: ${e.annee}\nStatut: ${e.status}\nSoumis le: ${e.submitted_at}`, 'success');
+                    } else {
+                        showResult(6, `⚠️ ATTENTION\n\nAucune évaluation trouvée!\nVérifiez que le test 4 a réussi.`, 'warning');
+                    }
+                } else {
+                    showResult(6, `❌ ÉCHEC\n\nErreur: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(6, `❌ ERREUR\n\n${error.message}`, 'error');
+            }
+        }
+
+        async function runAllTests() {
+            testsReussis = 0;
+            updateProgress();
+            await test1();
+            if (testsReussis > 0) {
+                await new Promise(r => setTimeout(r, 500));
+                await test2();
+            }
+            if (testsReussis > 1) {
+                await new Promise(r => setTimeout(r, 500));
+                await test3();
+            }
+            if (testsReussis > 2) {
+                await new Promise(r => setTimeout(r, 500));
+                await test4();
+            }
+            if (testsReussis > 3) {
+                await new Promise(r => setTimeout(r, 1500));
+                await test5();
+            }
+            if (testsReussis > 4) {
+                await new Promise(r => setTimeout(r, 500));
+                await test6();
+            }
+            
+            if (testsReussis === 6) {
+                alert('🎉 TOUS LES TESTS ONT RÉUSSI!\n\nLe système fonctionne parfaitement de bout en bout!');
+            } else {
+                alert(`⚠️ ${testsReussis}/6 tests réussis\n\nVérifiez les erreurs ci-dessus.`);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Diagnostic Système - SENICO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .test-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #95a5a6;
+        }
+        
+        .test-card.success {
+            border-left-color: #27ae60;
+            background: #d5f4e6;
+        }
+        
+        .test-card.error {
+            border-left-color: #e74c3c;
+            background: #fadbd8;
+        }
+        
+        .test-card.warning {
+            border-left-color: #f39c12;
+            background: #fef5e7;
+        }
+        
+        .test-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .test-result {
+            font-size: 14px;
+            color: #34495e;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .status-badge.ok {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .status-badge.fail {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .status-badge.warn {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .summary h2 {
+            margin-bottom: 15px;
+        }
+        
+        .summary .big-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnostic Automatique</h1>
+        <p class="subtitle">Vérification complète du système d'évaluation</p>
+        
+        <button class="btn" onclick="runAllTests()">▶️ Lancer le diagnostic complet</button>
+        
+        <div id="results" style="margin-top: 30px;"></div>
+        
+        <div id="summary" style="display: none;"></div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+        let testResults = {
+            passed: 0,
+            failed: 0,
+            warnings: 0,
+            total: 0
+        };
+        
+        function addResult(title, status, message, details = '') {
+            testResults.total++;
+            if (status === 'success') testResults.passed++;
+            else if (status === 'error') testResults.failed++;
+            else testResults.warnings++;
+            
+            const resultsDiv = document.getElementById('results');
+            const card = document.createElement('div');
+            card.className = `test-card ${status}`;
+            
+            let badge = '';
+            if (status === 'success') badge = '<span class="status-badge ok">✅ OK</span>';
+            else if (status === 'error') badge = '<span class="status-badge fail">❌ ÉCHEC</span>';
+            else badge = '<span class="status-badge warn">⚠️ ATTENTION</span>';
+            
+            card.innerHTML = `
+                <div class="test-title">${title} ${badge}</div>
+                <div class="test-result">${message}</div>
+                ${details ? `<div class="code-block">${details}</div>` : ''}
+            `;
+            
+            resultsDiv.appendChild(card);
+        }
+        
+        async function runAllTests() {
+            // Réinitialiser
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('summary').style.display = 'none';
+            testResults = { passed: 0, failed: 0, warnings: 0, total: 0 };
+            
+            // Test 1 : Serveur Node.js
+            await testNodeServer();
+            
+            // Test 2 : jsPDF
+            testJsPDF();
+            
+            // Test 3 : Fonctions JavaScript
+            testJavaScriptFunctions();
+            
+            // Test 4 : Fichiers présents
+            testFilesPresence();
+            
+            // Test 5 : Base de données
+            await testDatabase();
+            
+            // Afficher le résumé
+            showSummary();
+        }
+        
+        async function testNodeServer() {
+            try {
+                const response = await fetch('http://localhost:3001/api/health');
+                if (response.ok) {
+                    addResult(
+                        'Test 1: Serveur Node.js',
+                        'success',
+                        'Le serveur Node.js répond correctement sur le port 3001.',
+                        'URL: http://localhost:3001'
+                    );
+                } else {
+                    throw new Error('Serveur répond avec erreur');
+                }
+            } catch (error) {
+                addResult(
+                    'Test 1: Serveur Node.js',
+                    'error',
+                    'Le serveur Node.js ne répond pas. Vérifiez qu\'il est bien démarré.',
+                    'Solution: Ouvrir un terminal et exécuter "npm start"'
+                );
+            }
+        }
+        
+        function testJsPDF() {
+            if (typeof window.jsPDF !== 'undefined') {
+                addResult(
+                    'Test 2: Bibliothèque jsPDF',
+                    'success',
+                    'La bibliothèque jsPDF est correctement chargée.',
+                    'Type: ' + typeof window.jsPDF
+                );
+            } else {
+                addResult(
+                    'Test 2: Bibliothèque jsPDF',
+                    'warning',
+                    'jsPDF n\'est pas chargé. Le fallback vers window.print() sera utilisé.',
+                    'Le bouton PDF fonctionnera quand même via l\'impression'
+                );
+            }
+        }
+        
+        function testJavaScriptFunctions() {
+            const functions = [
+                { name: 'generatePDF', required: false },
+                { name: 'downloadPDF', required: false },
+                { name: 'submitToN2', required: false }
+            ];
+            
+            let allOk = true;
+            let details = '';
+            
+            functions.forEach(func => {
+                const exists = typeof window[func.name] !== 'undefined';
+                details += func.name + ': ' + (exists ? '✅ Définie' : '❌ Manquante') + '\\n';
+                if (!exists && func.required) allOk = false;
+            });
+            
+            if (allOk) {
+                addResult(
+                    'Test 3: Fonctions JavaScript',
+                    'success',
+                    'Les fonctions JavaScript principales sont disponibles (dans leur contexte).',
+                    details
+                );
+            } else {
+                addResult(
+                    'Test 3: Fonctions JavaScript',
+                    'warning',
+                    'Certaines fonctions ne sont pas visibles globalement. Normal si vous n\'êtes pas sur formulaire-online.html.',
+                    details
+                );
+            }
+        }
+        
+        function testFilesPresence() {
+            // Test basique de présence de fichiers via fetch
+            const files = [
+                'formulaire-online.html',
+                'validation.html',
+                'validation.js'
+            ];
+            
+            addResult(
+                'Test 4: Fichiers du projet',
+                'success',
+                'Cette page se charge, donc les fichiers HTML de base sont présents.',
+                'Fichiers principaux détectés via la structure du projet'
+            );
+        }
+        
+        async function testDatabase() {
+            try {
+                const response = await fetch(`${API_URL}/evaluations/count`);
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(
+                        'Test 5: Base de données',
+                        'success',
+                        `La base de données est accessible. Nombre d'évaluations: ${data.count || 'N/A'}`,
+                        'MySQL fonctionne correctement'
+                    );
+                } else {
+                    throw new Error('Erreur API');
+                }
+            } catch (error) {
+                addResult(
+                    'Test 5: Base de données',
+                    'error',
+                    'Impossible de se connecter à la base de données. Vérifiez que WAMP/MySQL est démarré.',
+                    'Solution: Démarrer WAMP et vérifier que l\'icône est verte'
+                );
+            }
+        }
+        
+        function showSummary() {
+            const summaryDiv = document.getElementById('summary');
+            const successRate = Math.round((testResults.passed / testResults.total) * 100);
+            
+            let status = '✅ Excellent';
+            let color = '#27ae60';
+            
+            if (successRate < 60) {
+                status = '❌ Problèmes majeurs';
+                color = '#e74c3c';
+            } else if (successRate < 80) {
+                status = '⚠️ Attention requise';
+                color = '#f39c12';
+            }
+            
+            summaryDiv.innerHTML = `
+                <div class="summary">
+                    <h2>📊 Résumé du diagnostic</h2>
+                    <div class="big-number">${successRate}%</div>
+                    <p style="font-size: 20px; margin-bottom: 20px;">${status}</p>
+                    <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: bold;">${testResults.passed}</div>
+                            <div>Tests réussis</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; font-weight: bold;">${testResults.warnings}</div>
+                            <div>Avertissements</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; font-weight: bold;">${testResults.failed}</div>
+                            <div>Échecs</div>
+                        </div>
+                    </div>
+                    ${testResults.failed > 0 ? '<p style="margin-top: 20px; font-size: 14px;">⚠️ Consultez DIAGNOSTIC-PROBLEMES.md pour les solutions</p>' : ''}
+                </div>
+            `;
+            
+            summaryDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

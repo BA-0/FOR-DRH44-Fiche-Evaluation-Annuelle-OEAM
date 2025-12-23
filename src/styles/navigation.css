@@ -1,0 +1,101 @@
+/* ===============================================
+   BOUTON RETOUR NAVIGATION - SENICO SA
+   =============================================== */
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateX(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.back-button:active {
+    transform: translateX(-3px);
+}
+
+.back-button-icon {
+    font-size: 18px;
+    transition: transform 0.3s;
+}
+
+.back-button:hover .back-button-icon {
+    transform: translateX(-3px);
+}
+
+/* Version alternative pour pages sans header gradient */
+.back-button.alt {
+    background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(74, 157, 95, 0.3);
+}
+
+.back-button.alt:hover {
+    transform: translateY(-2px) translateX(-5px);
+    box-shadow: 0 6px 20px rgba(74, 157, 95, 0.4);
+}
+
+/* Version compacte */
+.back-button.compact {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+/* Navigation breadcrumb (fil d'Ariane) */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.breadcrumb a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.breadcrumb a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .back-button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+    .back-button-text {
+        display: none;
+    }
+    
+    .back-button-icon {
+        font-size: 20px;
+    }
+}

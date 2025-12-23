@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <!-- Ligne rouge en haut -->
+  <path d="M 20 8 Q 100 2, 180 10" stroke="#E30613" stroke-width="3" fill="none"/>
+  
+  <!-- Point vert -->
+  <circle cx="25" cy="15" r="4" fill="#4A9D5F"/>
+  
+  <!-- Texte SENICO stylisé -->
+  <g fill="#4A9D5F" font-family="Arial, sans-serif" font-weight="bold">
+    <!-- S -->
+    <path d="M 15 35 Q 15 28, 22 28 L 30 28 Q 37 28, 37 35 Q 37 40, 30 40 L 25 40 Q 20 40, 20 45 Q 20 50, 25 50 L 33 50 Q 40 50, 40 55" stroke="#4A9D5F" stroke-width="4" fill="none" stroke-linecap="round"/>
+    
+    <!-- E -->
+    <rect x="45" y="28" width="4" height="27" fill="#4A9D5F"/>
+    <rect x="45" y="28" width="15" height="4" fill="#4A9D5F"/>
+    <rect x="45" y="39" width="12" height="4" fill="#4A9D5F"/>
+    <rect x="45" y="51" width="15" height="4" fill="#4A9D5F"/>
+    
+    <!-- N -->
+    <rect x="65" y="28" width="4" height="27" fill="#4A9D5F"/>
+    <path d="M 69 28 L 79 55" stroke="#4A9D5F" stroke-width="4" stroke-linecap="round"/>
+    <rect x="79" y="28" width="4" height="27" fill="#4A9D5F"/>
+    
+    <!-- I -->
+    <rect x="88" y="28" width="4" height="27" fill="#4A9D5F"/>
+    <circle cx="90" cy="22" r="2.5" fill="#4A9D5F"/>
+    
+    <!-- C -->
+    <path d="M 110 30 Q 98 28, 98 41.5 Q 98 55, 110 53" stroke="#4A9D5F" stroke-width="4" fill="none" stroke-linecap="round"/>
+    
+    <!-- O -->
+    <ellipse cx="122" cy="41.5" rx="10" ry="13.5" stroke="#4A9D5F" stroke-width="4" fill="none"/>
+  </g>
+  
+  <!-- Sous-titre -->
+  <text x="10" y="68" font-family="Arial, sans-serif" font-size="8" fill="#E30613" letter-spacing="1">
+    SÉNÉGALAISE INDUSTRIE COMMERCE
+  </text>
+</svg>

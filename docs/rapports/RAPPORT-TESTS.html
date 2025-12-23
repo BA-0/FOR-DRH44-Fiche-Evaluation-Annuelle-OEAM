@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport de Tests - Formulaire Évaluation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f5f5f5;
+        }
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .summary-card h3 { font-size: 0.9em; color: #666; margin-bottom: 10px; }
+        .summary-card .value { font-size: 2.5em; font-weight: bold; }
+        .summary-card.total .value { color: #2196f3; }
+        .summary-card.success .value { color: #4caf50; }
+        .summary-card.failed .value { color: #f44336; }
+        .summary-card.percentage .value { color: #ff9800; }
+        .content { padding: 40px; }
+        .category {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .category-header {
+            background: #fafafa;
+            padding: 20px;
+            border-left: 5px solid #2196f3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .category-header h3 { font-size: 1.3em; color: #333; }
+        .category-stats {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .stat-badge {
+            background: #e3f2fd;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+        .percentage {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .tests-container { padding: 20px; }
+        .test-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+        .test-item.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+        .test-item.failed {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+        .test-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .test-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            padding-left: 20px;
+        }
+        .footer {
+            background: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Rapport de Tests Automatisés</h1>
+            <p>Formulaire d'Évaluation SENICO</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">Généré le 19/12/2025 13:42:14</p>
+        </div>
+        
+        <div class="summary">
+            <div class="summary-card total">
+                <h3>Total des Tests</h3>
+                <div class="value">35</div>
+            </div>
+            <div class="summary-card success">
+                <h3>Tests Réussis</h3>
+                <div class="value">11</div>
+            </div>
+            <div class="summary-card failed">
+                <h3>Tests Échoués</h3>
+                <div class="value">24</div>
+            </div>
+            <div class="summary-card percentage">
+                <h3>Taux de Réussite</h3>
+                <div class="value">31.4%</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2 style="margin-bottom: 30px; color: #333;">📋 Détails par Catégorie</h2>
+            
+            <div class="category">
+                <div class="category-header" style="border-left-color: #f44336">
+                    <h3>Authentification</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">2/9</span>
+                        <span class="percentage" style="color: #f44336">22%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item failed">
+                    <div class="test-name">❌ Connexion N+1 (awa.ndiaye)</div>
+                    <div class="test-details">Erreur serveur lors de la connexion</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Connexion N+2 (mamadou.fall)</div>
+                    <div class="test-details">Erreur serveur lors de la connexion</div>
+                </div>
+            
+                <div class="test-item success">
+                    <div class="test-name">✅ Rejet mot de passe incorrect</div>
+                    <div class="test-details">OK: accès refusé</div>
+                </div>
+            
+                <div class="test-item success">
+                    <div class="test-name">✅ Rejet utilisateur inexistant</div>
+                    <div class="test-details">OK: utilisateur non trouvé</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Connexion ibrahima.sarr (N1)</div>
+                    
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Connexion aminata.ba (N1)</div>
+                    
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Connexion moussa.gueye (N1)</div>
+                    
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Connexion fatou.diagne (N2)</div>
+                    
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Connexion ousseynou.seck (N2)</div>
+                    
+                </div>
+            
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header" style="border-left-color: #f44336">
+                    <h3>Récupération</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">0/6</span>
+                        <span class="percentage" style="color: #f44336">0%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item failed">
+                    <div class="test-name">❌ Liste évaluations N+1</div>
+                    <div class="test-details">invalid json response body at http://localhost:3001/api/evaluations/user/4 reason: Unexpected token '<', "<!DOCTYPE "... is not valid JSON</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Détails complets évaluation #1</div>
+                    <div class="test-details">Évaluation non trouvée</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Parsing JSON objectifs</div>
+                    <div class="test-details">Erreur parsing</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Parsing JSON compétences</div>
+                    <div class="test-details">Erreur parsing</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Évaluations en attente</div>
+                    <div class="test-details">invalid json response body at http://localhost:3001/api/evaluations/pending reason: Unexpected token '<', "<!DOCTYPE "... is not valid JSON</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Recherche par email</div>
+                    <div class="test-details">invalid json response body at http://localhost:3001/api/evaluations/search?email=thiam reason: Unexpected token '<', "<!DOCTYPE "... is not valid JSON</div>
+                </div>
+            
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header" style="border-left-color: #f44336">
+                    <h3>Création</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">1/2</span>
+                        <span class="percentage" style="color: #f44336">50%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item success">
+                    <div class="test-name">✅ Nouvelle évaluation (POST /api/evaluations)</div>
+                    <div class="test-details">ID: 44 - Statut: undefined</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Vérification statut draft</div>
+                    <div class="test-details">Statut: inconnu</div>
+                </div>
+            
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header" style="border-left-color: #4caf50">
+                    <h3>Modification</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">2/2</span>
+                        <span class="percentage" style="color: #4caf50">100%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item success">
+                    <div class="test-name">✅ Mise à jour évaluation (PUT)</div>
+                    <div class="test-details">Modifications enregistrées</div>
+                </div>
+            
+                <div class="test-item success">
+                    <div class="test-name">✅ Vérification modification appliquée</div>
+                    <div class="test-details">Observations mises à jour</div>
+                </div>
+            
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header" style="border-left-color: #f44336">
+                    <h3>Soumission</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">1/3</span>
+                        <span class="percentage" style="color: #f44336">33%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item success">
+                    <div class="test-name">✅ Soumission à N+2 (POST /submit)</div>
+                    <div class="test-details">Évaluation soumise avec succès au validateur N+2</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Vérification statut soumis_n1</div>
+                    <div class="test-details">Statut: inconnu</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Vérification signature N+1</div>
+                    <div class="test-details">Signature manquante</div>
+                </div>
+            
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header" style="border-left-color: #f44336">
+                    <h3>Validation</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">1/3</span>
+                        <span class="percentage" style="color: #f44336">33%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item success">
+                    <div class="test-name">✅ Validation N+2 (POST /validate)</div>
+                    <div class="test-details">Évaluation validée avec succès</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Vérification statut valide_n2</div>
+                    <div class="test-details">Statut final: inconnu</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Vérification signature N+2</div>
+                    <div class="test-details">Signature N+2 manquante</div>
+                </div>
+            
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header" style="border-left-color: #f44336">
+                    <h3>Évaluations</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">0/5</span>
+                        <span class="percentage" style="color: #f44336">0%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item failed">
+                    <div class="test-name">❌ Évaluation #1 - Cheikh THIAM</div>
+                    <div class="test-details">Données incorrectes</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Évaluation #2 - Mariama DIALLO</div>
+                    <div class="test-details">Données incorrectes</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Évaluation #3 - Amadou SOW</div>
+                    <div class="test-details">Données incorrectes</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Évaluation #4 - Aissatou CISSE</div>
+                    <div class="test-details">Données incorrectes</div>
+                </div>
+            
+                <div class="test-item failed">
+                    <div class="test-name">❌ Évaluation #5 - Ousmane KANE</div>
+                    <div class="test-details">Données incorrectes</div>
+                </div>
+            
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header" style="border-left-color: #f44336">
+                    <h3>Workflow</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">0/1</span>
+                        <span class="percentage" style="color: #f44336">0%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item failed">
+                    <div class="test-name">❌ État initial: draft</div>
+                    
+                </div>
+            
+                </div>
+            </div>
+        
+            <div class="category">
+                <div class="category-header" style="border-left-color: #4caf50">
+                    <h3>Sécurité</h3>
+                    <div class="category-stats">
+                        <span class="stat-badge">4/4</span>
+                        <span class="percentage" style="color: #4caf50">100%</span>
+                    </div>
+                </div>
+                <div class="tests-container">
+                    
+                <div class="test-item success">
+                    <div class="test-name">✅ Empêcher double soumission</div>
+                    <div class="test-details">OK: soumission bloquée</div>
+                </div>
+            
+                <div class="test-item success">
+                    <div class="test-name">✅ Empêcher validation sans soumission</div>
+                    <div class="test-details">OK: validation bloquée</div>
+                </div>
+            
+                <div class="test-item success">
+                    <div class="test-name">✅ Gestion ID invalide</div>
+                    <div class="test-details">OK: erreur retournée</div>
+                </div>
+            
+                <div class="test-item success">
+                    <div class="test-name">✅ Rejet JSON malformé</div>
+                    <div class="test-details">Status: 400</div>
+                </div>
+            
+                </div>
+            </div>
+        
+        </div>
+        
+        <div class="footer">
+            <p>Tests exécutés sur: http://localhost:3001</p>
+            <p style="margin-top: 5px; font-size: 0.9em;">Système de Gestion des Évaluations - SENICO © 2024</p>
+        </div>
+    </div>
+</body>
+</html>

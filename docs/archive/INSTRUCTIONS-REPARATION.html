@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Réparation Base de Données</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .problem {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        
+        .problem h2 {
+            color: #c62828;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .problem ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .problem li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ffcdd2;
+        }
+        
+        .problem li:last-child {
+            border-bottom: none;
+        }
+        
+        .steps {
+            counter-reset: step-counter;
+        }
+        
+        .step {
+            background: #f5f5f5;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            position: relative;
+            counter-increment: step-counter;
+        }
+        
+        .step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #4caf50;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .step h3 {
+            margin-bottom: 15px;
+            color: #2e7d32;
+            font-size: 1.3em;
+        }
+        
+        .step p {
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .code-block {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .success-box h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        .warning {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .file-path {
+            background: #e3f2fd;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            display: inline-block;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Réparation Complète</h1>
+            <p>Base de Données Formulaire Évaluation</p>
+        </div>
+        
+        <div class="content">
+            <div class="problem">
+                <h2>❌ Problèmes Détectés</h2>
+                <ul>
+                    <li><strong>Utilisateurs manquants:</strong> evaluateur, validateur non trouvés</li>
+                    <li><strong>JSON corrompu:</strong> Unexpected end of JSON input</li>
+                    <li><strong>Connexion échouée:</strong> Impossible de se connecter</li>
+                    <li><strong>Tests API échoués:</strong> Récupération de données impossible</li>
+                </ul>
+            </div>
+            
+            <div class="warning">
+                <strong>⚠️ IMPORTANT:</strong> Cette réparation va SUPPRIMER toutes les évaluations existantes et recréer les comptes de démonstration avec des données propres.
+            </div>
+            
+            <div class="steps">
+                <div class="step">
+                    <h3>Ouvrir phpMyAdmin</h3>
+                    <p>Cliquez sur le bouton ci-dessous pour ouvrir phpMyAdmin dans un nouvel onglet :</p>
+                    <a href="http://localhost/phpmyadmin/" target="_blank" class="btn">🌐 Ouvrir phpMyAdmin</a>
+                </div>
+                
+                <div class="step">
+                    <h3>Aller à l'onglet SQL</h3>
+                    <p>Dans phpMyAdmin, cliquez sur l'onglet <strong>"SQL"</strong> en haut de la page.</p>
+                </div>
+                
+                <div class="step">
+                    <h3>Ouvrir le fichier SQL</h3>
+                    <p>Ouvrez le fichier suivant sur votre ordinateur :</p>
+                    <div class="file-path">📄 reparer-base.sql</div>
+                    <p style="margin-top: 10px;">Emplacement : <code>c:\Users\cheri\Documents\SENICO\formulaire evaluation\</code></p>
+                    <button class="btn btn-success" onclick="copyFilePath()">📋 Copier le chemin</button>
+                </div>
+                
+                <div class="step">
+                    <h3>Copier et Coller le contenu</h3>
+                    <p>1. Ouvrez <strong>reparer-base.sql</strong> avec le Bloc-notes<br>
+                       2. Sélectionnez TOUT le contenu (Ctrl+A)<br>
+                       3. Copiez (Ctrl+C)<br>
+                       4. Collez dans la zone de texte SQL de phpMyAdmin (Ctrl+V)</p>
+                </div>
+                
+                <div class="step">
+                    <h3>Exécuter le script</h3>
+                    <p>Cliquez sur le bouton <strong>"Exécuter"</strong> ou <strong>"Go"</strong> en bas à droite dans phpMyAdmin.</p>
+                </div>
+                
+                <div class="step">
+                    <h3>Vérifier les résultats</h3>
+                    <p>Vous devez voir 5 lignes avec ✅ :</p>
+                    <div class="code-block">
+✅ Utilisateurs créés - Total: 3
+✅ Évaluations créées - Total: 1  
+✅ Table audit_log - Statut: Existe
+✅ Procédure sp_submit_evaluation - Statut: Existe
+✅ Procédure sp_validate_evaluation - Statut: Existe
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3>Redémarrer le serveur</h3>
+                    <p>Dans le terminal où tourne le serveur Node.js :</p>
+                    <div class="code-block">
+# 1. Arrêtez le serveur : CTRL+C
+# 2. Redémarrez :
+npm start
+                    </div>
+                </div>
+            </div>
+            
+            <div class="success-box">
+                <h3>✅ Après la Réparation</h3>
+                <p><strong>Comptes disponibles :</strong></p>
+                <ul style="margin-top: 10px;">
+                    <li>👤 <strong>evaluateur</strong> / eval123 (Rôle N+1)</li>
+                    <li>👤 <strong>validateur</strong> / valid123 (Rôle N+2)</li>
+                    <li>👤 <strong>ousseynou.seck</strong> / admin123 (Rôle N+2)</li>
+                </ul>
+                <p style="margin-top: 15px;"><strong>1 évaluation de test</strong> sera disponible pour tester toutes les fonctionnalités.</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="http://localhost:3001/login.html" class="btn btn-success">🔑 Tester la Connexion</a>
+                <button class="btn btn-danger" onclick="openAllFiles()">📂 Ouvrir Tous les Fichiers</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function copyFilePath() {
+            const path = 'c:\\Users\\cheri\\Documents\\SENICO\\formulaire evaluation\\reparer-base.sql';
+            navigator.clipboard.writeText(path).then(() => {
+                alert('✅ Chemin copié !\n\nCollez-le dans l\'Explorateur Windows (Win+E) pour ouvrir le fichier.');
+            }).catch(() => {
+                alert('❌ Erreur de copie.\n\nChemin manuel :\nc:\\Users\\cheri\\Documents\\SENICO\\formulaire evaluation\\reparer-base.sql');
+            });
+        }
+        
+        function openAllFiles() {
+            window.open('http://localhost/phpmyadmin/', '_blank');
+            setTimeout(() => {
+                alert('📋 ÉTAPES SUIVANTES:\n\n' +
+                      '1. phpMyAdmin est ouvert\n' +
+                      '2. Cliquez sur "SQL"\n' +
+                      '3. Ouvrez reparer-base.sql\n' +
+                      '4. Copiez TOUT\n' +
+                      '5. Collez dans phpMyAdmin\n' +
+                      '6. Exécutez\n' +
+                      '7. Redémarrez: npm start');
+            }, 500);
+        }
+    </script>
+</body>
+</html>

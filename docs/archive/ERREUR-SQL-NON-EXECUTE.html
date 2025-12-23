@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❌ Base de Données Non Initialisée</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff5252 0%, #f48fb1 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 3em; margin-bottom: 10px; }
+        .header p { font-size: 1.3em; }
+        .content { padding: 40px; }
+        .problem-box {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        .problem-box h2 {
+            color: #c62828;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .problem-box ul {
+            margin-left: 20px;
+            line-height: 2;
+        }
+        .status-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .status-item.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+        .status-item.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+        }
+        .steps {
+            background: #e3f2fd;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .steps h3 {
+            color: #1565c0;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        .steps ol {
+            margin-left: 20px;
+            line-height: 2.5;
+        }
+        .steps ol li {
+            font-size: 1.1em;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .btn-large {
+            font-size: 1.3em;
+            padding: 20px 40px;
+        }
+        .code-box {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>❌</h1>
+            <h1>Base Non Initialisée</h1>
+            <p>Le script SQL n'a pas été exécuté</p>
+        </div>
+        
+        <div class="content">
+            <div class="problem-box">
+                <h2>🔍 Diagnostic Actuel</h2>
+                <div class="status-item error">
+                    <strong>❌ UTILISATEURS:</strong> Seulement 2 utilisateurs trouvés<br>
+                    <small>Attendu: 7 utilisateurs (4 N+1, 3 N+2)</small>
+                </div>
+                <div class="status-item error">
+                    <strong>❌ ÉVALUATIONS:</strong> Structure de table incorrecte<br>
+                    <small>La table n'a pas les bonnes colonnes (nom_agent, prenom_agent manquantes)</small>
+                </div>
+                <div class="status-item error">
+                    <strong>❌ PROCÉDURES:</strong> Non vérifiées (probablement manquantes)<br>
+                    <small>Attendu: sp_submit_evaluation, sp_validate_evaluation</small>
+                </div>
+                <div class="status-item warning">
+                    <strong>⚠️ CONSÉQUENCE:</strong> Les tests ne peuvent PAS fonctionner<br>
+                    <small>Aucun compte de test disponible, structure incompatible</small>
+                </div>
+            </div>
+
+            <div class="steps">
+                <h3>📋 SOLUTION - Exécuter le Script SQL</h3>
+                <ol>
+                    <li><strong>Ouvrez phpMyAdmin</strong>
+                        <button class="btn" onclick="window.open('http://localhost/phpmyadmin/', '_blank')" style="margin-left: 10px;">🌐 Ouvrir Maintenant</button>
+                    </li>
+                    <li><strong>Cliquez sur l'onglet "SQL"</strong> en haut de la page</li>
+                    <li><strong>Ouvrez le fichier :</strong>
+                        <div class="code-box">c:\Users\cheri\Documents\SENICO\formulaire evaluation\reparer-base.sql</div>
+                        <button class="btn" onclick="copyPath()">📋 Copier le Chemin</button>
+                    </li>
+                    <li><strong>Sélectionnez TOUT le contenu</strong> du fichier (Ctrl+A)</li>
+                    <li><strong>Copiez</strong> (Ctrl+C)</li>
+                    <li><strong>Collez dans la zone SQL</strong> de phpMyAdmin (Ctrl+V)</li>
+                    <li><strong>Cliquez sur "Exécuter"</strong> en bas à droite</li>
+                </ol>
+            </div>
+
+            <div class="status-item" style="background: #e8f5e9; border-left-color: #4caf50; margin: 30px 0;">
+                <h3 style="color: #2e7d32; margin-bottom: 15px;">✅ Résultat Attendu</h3>
+                <p style="margin-bottom: 10px;">Après l'exécution, vous devriez voir :</p>
+                <div class="code-box">
+✅ Utilisateurs créés - Total: 7
+✅ Évaluations créées - Total: 5
+✅ Table audit_log - Statut: Existe
+✅ Procédure sp_submit_evaluation - Statut: Existe
+✅ Procédure sp_validate_evaluation - Statut: Existe
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h3 style="margin-bottom: 20px; color: #333;">Après l'exécution du SQL :</h3>
+                <button class="btn btn-large" onclick="location.reload()">🔄 Vérifier à Nouveau</button>
+            </div>
+
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin-top: 30px; text-align: center;">
+                <h4 style="margin-bottom: 15px;">📊 État Actuel</h4>
+                <p><strong>Utilisateurs:</strong> 2/7 ❌</p>
+                <p><strong>Évaluations:</strong> Structure incorrecte ❌</p>
+                <p><strong>Procédures:</strong> Non vérifiées ❌</p>
+                <p style="margin-top: 15px; color: #f44336; font-weight: bold;">⚠️ Base de données non prête pour les tests</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyPath() {
+            const path = 'c:\\Users\\cheri\\Documents\\SENICO\\formulaire evaluation\\reparer-base.sql';
+            navigator.clipboard.writeText(path).then(() => {
+                alert('✅ Chemin copié !\n\n' + path + '\n\nOuvrez l\'Explorateur Windows (Win+E) et collez le chemin dans la barre d\'adresse.');
+            }).catch(() => {
+                alert('Chemin du fichier :\n\n' + path);
+            });
+        }
+    </script>
+</body>
+</html>

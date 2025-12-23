@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic Connexion</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 900px; margin: 0 auto; background: #f5f5f5; }
+        .box { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-left: 4px solid #28a745; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 10px; border-left: 4px solid #dc3545; margin: 10px 0; }
+        .info { background: #d1ecf1; color: #0c5460; padding: 10px; border-left: 4px solid #17a2b8; margin: 10px 0; }
+        button { background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; margin: 5px; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Diagnostic de Connexion Serveur</h1>
+    
+    <div class="box">
+        <h2>📊 État du Système</h2>
+        <div id="system-status"></div>
+    </div>
+    
+    <div class="box">
+        <h2>🔐 Authentification</h2>
+        <div id="auth-status"></div>
+    </div>
+    
+    <div class="box">
+        <h2>🧪 Tests API</h2>
+        <div class="grid">
+            <button onclick="testServer()">1️⃣ Test Serveur</button>
+            <button onclick="testEvaluations()">2️⃣ Test /evaluations</button>
+            <button onclick="testLoginN1()">3️⃣ Test Login N1</button>
+            <button onclick="testLoginN2()">4️⃣ Test Login N2</button>
+        </div>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="box">
+        <h2>📝 Console</h2>
+        <div id="console-log"></div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+        let consoleLog = [];
+        
+        function log(msg, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            consoleLog.push({ time: timestamp, msg, type });
+            updateConsole();
+            console.log(`[${timestamp}]`, msg);
+        }
+        
+        function updateConsole() {
+            const div = document.getElementById('console-log');
+            div.innerHTML = consoleLog.slice(-10).reverse().map(l => 
+                `<div class="${l.type}">${l.time} - ${l.msg}</div>`
+            ).join('');
+        }
+        
+        function checkSystem() {
+            const authToken = localStorage.getItem('authToken');
+            const userRole = localStorage.getItem('userRole');
+            const userName = localStorage.getItem('userName');
+            const userEmail = localStorage.getItem('userEmail');
+            
+            document.getElementById('system-status').innerHTML = `
+                <div class="${authToken ? 'success' : 'error'}">
+                    🖥️ <strong>Navigateur:</strong> ${navigator.userAgent.split(/[()]/)[1] || 'Inconnu'}<br>
+                    📍 <strong>URL:</strong> ${window.location.href}<br>
+                    🔗 <strong>API configurée:</strong> ${API_URL}
+                </div>
+            `;
+            
+            document.getElementById('auth-status').innerHTML = `
+                <div class="${authToken ? 'info' : 'error'}">
+                    ${authToken ? '✅' : '❌'} <strong>Token:</strong> ${authToken ? authToken.substring(0, 30) + '...' : 'Absent'}<br>
+                    ${userRole ? '✅' : '❌'} <strong>Rôle:</strong> ${userRole || 'Non défini'}<br>
+                    ${userName ? '✅' : '❌'} <strong>Nom:</strong> ${userName || 'Non défini'}<br>
+                    ${userEmail ? '✅' : '❌'} <strong>Email:</strong> ${userEmail || 'Non défini'}
+                </div>
+                ${userRole === 'N2' ? `
+                    <div class="error" style="margin-top: 10px;">
+                        ⚠️ <strong>ATTENTION:</strong> Vous êtes connecté en tant que N2 (Validateur).<br>
+                        Vous devriez être sur la page <a href="validation.html">validation.html</a> et non sur formulaire-online.html.
+                    </div>
+                ` : ''}
+            `;
+            
+            log('Vérification système terminée', authToken ? 'success' : 'error');
+        }
+        
+        async function testServer() {
+            log('Test de connexion au serveur...', 'info');
+            const resultsDiv = document.getElementById('test-results');
+            
+            try {
+                const start = Date.now();
+                const response = await fetch('http://localhost:3001/api/evaluations', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const duration = Date.now() - start;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>Serveur ACTIF</strong><br>
+                            Status: ${response.status} ${response.statusText}<br>
+                            Temps de réponse: ${duration}ms<br>
+                            Évaluations: ${data.length}
+                        </div>
+                    `;
+                    log(`Serveur OK (${duration}ms, ${data.length} évaluations)`, 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        ❌ <strong>SERVEUR INACCESSIBLE</strong><br>
+                        ${error.message}<br><br>
+                        <strong>Vérifiez:</strong>
+                        <ul>
+                            <li>WAMP est démarré (icône verte)</li>
+                            <li>Le serveur Node.js est actif: <code>node server-mysql.js</code></li>
+                            <li>Aucun firewall ne bloque le port 3001</li>
+                        </ul>
+                    </div>
+                `;
+                log(`Erreur serveur: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testEvaluations() {
+            log('Test endpoint /evaluations...', 'info');
+            const resultsDiv = document.getElementById('test-results');
+            
+            try {
+                const response = await fetch(`${API_URL}/evaluations`);
+                const data = await response.json();
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">
+                        ✅ <strong>API /evaluations OK</strong><br>
+                        Total: ${data.length} évaluations
+                    </div>
+                    <pre>${JSON.stringify(data.slice(0, 2), null, 2)}</pre>
+                `;
+                log(`API /evaluations OK: ${data.length} évaluations`, 'success');
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+                log(`Erreur /evaluations: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLoginN1() {
+            log('Test connexion N1...', 'info');
+            const resultsDiv = document.getElementById('test-results');
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'awa.ndiaye',
+                        password: 'test123',
+                        role: 'N1'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>Connexion N1 RÉUSSIE</strong><br>
+                            User: ${data.userName}<br>
+                            Role: ${data.role}<br>
+                            Token: ${data.token.substring(0, 20)}...
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    log(`Connexion N1 OK: ${data.userName}`, 'success');
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ ${data.message || data.error}</div>`;
+                    log(`Échec connexion N1: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+                log(`Erreur connexion N1: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLoginN2() {
+            log('Test connexion N2...', 'info');
+            const resultsDiv = document.getElementById('test-results');
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'mamadou.fall',
+                        password: 'test123',
+                        role: 'N2'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            ✅ <strong>Connexion N2 RÉUSSIE</strong><br>
+                            User: ${data.userName}<br>
+                            Role: ${data.role}<br>
+                            Token: ${data.token.substring(0, 20)}...
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    log(`Connexion N2 OK: ${data.userName}`, 'success');
+                } else {
+                    resultsDiv.innerHTML = `<div class="error">❌ ${data.message || data.error}</div>`;
+                    log(`Échec connexion N2: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">❌ ${error.message}</div>`;
+                log(`Erreur connexion N2: ${error.message}`, 'error');
+            }
+        }
+        
+        // Au chargement
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Page de diagnostic chargée', 'info');
+            checkSystem();
+            
+            // Test automatique du serveur
+            setTimeout(testServer, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire d'Évaluation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+
+        .date-field {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+
+        .date-field input {
+            border: none;
+            border-bottom: 1px solid #333;
+            padding: 5px;
+            width: 200px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-value input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #34495e;
+            color: white;
+            font-weight: bold;
+        }
+
+        table td input[type="text"],
+        table td input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            border: none;
+            text-align: center;
+        }
+
+        table td.text-left {
+            text-align: left;
+        }
+
+        table td.text-left input {
+            text-align: left;
+        }
+
+        input[type="radio"] {
+            cursor: pointer;
+        }
+
+        .score-display {
+            background-color: #ecf0f1;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .observations {
+            margin-bottom: 30px;
+        }
+
+        .observation-block {
+            margin-bottom: 25px;
+        }
+
+        .observation-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .observation-subtitle {
+            font-weight: bold;
+            color: #555;
+            margin: 15px 0 5px 0;
+        }
+
+        .observation-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .signatures {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .signature-box {
+            border: 2px solid #333;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .signature-box h3 {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .signature-box input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .signature-area {
+            height: 80px;
+            border: 1px dashed #999;
+            margin: 10px 0;
+            background-color: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .note {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fff9e6;
+            border-left: 4px solid #f39c12;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        button {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background-color: #34495e;
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        button.submit-btn {
+            background-color: #27ae60;
+        }
+
+        button.submit-btn:hover {
+            background-color: #229954;
+        }
+
+        button.validate-btn {
+            background-color: #3498db;
+        }
+
+        button.validate-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .status-banner {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .status-draft {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+
+        .status-submitted {
+            background-color: #d1ecf1;
+            border: 2px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .status-validated {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .workflow-info {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin-bottom: 20px;
+        }
+
+        .workflow-info h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        .workflow-info ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .modal-buttons button {
+            margin-left: 10px;
+        }
+
+        .email-preview {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .email-option {
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .email-option:hover {
+            border-color: #3498db;
+            background-color: #f8f9fa;
+        }
+
+        .email-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .calculated-score {
+            background-color: #3498db;
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Formulaire d'Évaluation</h1>
+
+        <!-- Bannière de statut -->
+        <div id="statusBanner" class="status-banner status-draft" style="display: none;">
+            <span id="statusText"></span>
+        </div>
+
+        <!-- Information sur le workflow -->
+        <div class="workflow-info">
+            <h3>📋 Processus d'évaluation à distance</h3>
+            <p style="margin-bottom: 10px;"><em>Ce système permet à N+1 d'envoyer l'évaluation directement à N+2 par email, sans contact direct.</em></p>
+            <ul>
+                <li><strong>Étape 1 :</strong> N+1 remplit le formulaire d'évaluation de N et obtient sa signature</li>
+                <li><strong>Étape 2 :</strong> N+1 clique sur "✅ Soumettre à N+2" → Le formulaire est <strong>automatiquement envoyé par email</strong> au N+2</li>
+                <li><strong>Étape 3 :</strong> N+2 reçoit l'email, charge le formulaire, consulte l'évaluation et la valide à distance</li>
+                <li><strong>Étape 4 :</strong> Le formulaire validé par N+2 est transmis à la DRH</li>
+            </ul>
+            <div style="background-color: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                <strong>💡 Important :</strong> Pensez à renseigner l'email du N+2 dans les informations générales pour qu'il reçoive automatiquement le formulaire !
+            </div>
+        </div>
+        
+        <div class="date-field">
+            Date : <input type="date" id="formDate">
+        </div>
+
+        <!-- Section: Informations Générales -->
+        <div class="section">
+            <div class="section-title">INFORMATIONS GÉNÉRALES</div>
+            <div class="info-grid">
+                <div class="info-label">Direction :</div>
+                <div class="info-value"><input type="text" id="direction"></div>
+                
+                <div class="info-label">Service :</div>
+                <div class="info-value"><input type="text" id="service"></div>
+                
+                <div class="info-label">Prénom(s) et Nom de l'Evaluateur (N+1) :</div>
+                <div class="info-value"><input type="text" id="evaluateurNom"></div>
+                
+                <div class="info-label">Fonction de l'Evaluateur :</div>
+                <div class="info-value"><input type="text" id="evaluateurFonction"></div>
+                
+                <div class="info-label">Prénom(s) et nom de l'Evalué (N) :</div>
+                <div class="info-value"><input type="text" id="evalueNom"></div>
+                
+                <div class="info-label">Fonction :</div>
+                <div class="info-value"><input type="text" id="evalueFonction"></div>
+                
+                <div class="info-label">Catégorie :</div>
+                <div class="info-value"><input type="text" id="categorie"></div>
+                
+                <div class="info-label">Email du N+2 (pour envoi automatique) :</div>
+                <div class="info-value">
+                    <input type="email" id="emailN2" placeholder="exemple@entreprise.com" required>
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        📧 Le formulaire sera envoyé automatiquement à cette adresse lors de la soumission
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section I: Évaluation des Résultats -->
+        <div class="section">
+            <div class="section-title">I. ÉVALUATION DES RÉSULTATS (À faire par N+1)</div>
+            <p style="margin-bottom: 15px;">Comparés aux objectifs fixés en <input type="number" style="width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 3px;" id="annee" placeholder="20XX"> :</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 35%;">Objectifs de l'année</th>
+                        <th rowspan="2" style="width: 25%;">Indicateurs de performance</th>
+                        <th colspan="5">Taux de réalisation ≥ %</th>
+                    </tr>
+                    <tr>
+                        <th>20</th>
+                        <th>40</th>
+                        <th>60</th>
+                        <th>80</th>
+                        <th>100</th>
+                    </tr>
+                </thead>
+                <tbody id="objectifsTable">
+                    <tr data-obj="1">
+                        <td class="text-left"><input type="text" id="obj1"></td>
+                        <td class="text-left"><input type="text" id="ind1"></td>
+                        <td><input type="radio" name="taux1" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux1" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux1" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux1" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux1" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr data-obj="2">
+                        <td class="text-left"><input type="text" id="obj2"></td>
+                        <td class="text-left"><input type="text" id="ind2"></td>
+                        <td><input type="radio" name="taux2" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux2" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux2" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux2" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux2" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr data-obj="3">
+                        <td class="text-left"><input type="text" id="obj3"></td>
+                        <td class="text-left"><input type="text" id="ind3"></td>
+                        <td><input type="radio" name="taux3" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux3" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux3" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux3" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux3" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr data-obj="4">
+                        <td class="text-left"><input type="text" id="obj4"></td>
+                        <td class="text-left"><input type="text" id="ind4"></td>
+                        <td><input type="radio" name="taux4" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux4" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux4" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux4" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux4" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr data-obj="5">
+                        <td class="text-left"><input type="text" id="obj5"></td>
+                        <td class="text-left"><input type="text" id="ind5"></td>
+                        <td><input type="radio" name="taux5" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux5" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux5" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux5" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="taux5" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="score-display">
+                Score N°1 (somme des scores 1 à 5) / 5 = <span class="calculated-score" id="scoreN1">0</span> %
+            </div>
+        </div>
+
+        <!-- Section II: Évaluation du Savoir-Faire et Savoir-Être -->
+        <div class="section">
+            <div class="section-title">II. ÉVALUATION DU SAVOIR FAIRE ET DU SAVOIR ÊTRE (À faire par N+1)</div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Critère Principal</th>
+                        <th style="width: 25%;">Sous critères</th>
+                        <th colspan="5">Score. Cent %</th>
+                        <th style="width: 10%;">Score Partiel</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>≥ 20</th>
+                        <th>≥ 40</th>
+                        <th>≥ 60</th>
+                        <th>≥ 80</th>
+                        <th>≥ 100</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Qualités Professionnelles -->
+                    <tr>
+                        <td rowspan="11" style="font-weight: bold; background-color: #ecf0f1;">1. Qualités Professionnelles</td>
+                        <td class="text-left">1. Connaissances du travail</td>
+                        <td><input type="radio" name="qp1" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp1" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp1" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp1" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp1" value="100" onchange="calculateScores()"></td>
+                        <td rowspan="11" style="background-color: #d5dbdb; font-weight: bold; font-size: 16px;">
+                            <div>Total 1.</div>
+                            <div id="totalQP" class="calculated-score" style="margin-top: 10px;">0 %</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">2. Maîtrise des outils</td>
+                        <td><input type="radio" name="qp2" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp2" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp2" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp2" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp2" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">3. Quantité de travail</td>
+                        <td><input type="radio" name="qp3" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp3" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp3" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp3" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp3" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">4. Qualité de travail</td>
+                        <td><input type="radio" name="qp4" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp4" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp4" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp4" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp4" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">5. Compréhension des consignes</td>
+                        <td><input type="radio" name="qp5" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp5" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp5" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp5" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp5" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">6. Respect des délais de travail</td>
+                        <td><input type="radio" name="qp6" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp6" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp6" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp6" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp6" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">7. Esprit d'analyse</td>
+                        <td><input type="radio" name="qp7" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp7" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp7" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp7" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp7" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">8. Esprit de synthèse</td>
+                        <td><input type="radio" name="qp8" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp8" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp8" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp8" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp8" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">9. Organisation du travail</td>
+                        <td><input type="radio" name="qp9" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp9" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp9" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp9" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp9" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">10. Sens pratique</td>
+                        <td><input type="radio" name="qp10" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp10" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp10" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp10" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qp10" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr><td colspan="7" style="height: 5px; background-color: #95a5a6;"></td></tr>
+
+                    <!-- Qualités Personnelles -->
+                    <tr>
+                        <td rowspan="11" style="font-weight: bold; background-color: #ecf0f1;">2. Qualités Personnelles</td>
+                        <td class="text-left">1. Ponctualité</td>
+                        <td><input type="radio" name="qpers1" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers1" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers1" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers1" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers1" value="100" onchange="calculateScores()"></td>
+                        <td rowspan="11" style="background-color: #d5dbdb; font-weight: bold; font-size: 16px;">
+                            <div>Total 2.</div>
+                            <div id="totalQPers" class="calculated-score" style="margin-top: 10px;">0 %</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">2. Assiduité</td>
+                        <td><input type="radio" name="qpers2" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers2" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers2" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers2" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers2" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">3. Sens de l'économie</td>
+                        <td><input type="radio" name="qpers3" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers3" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers3" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers3" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers3" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">4. Sens de la performance</td>
+                        <td><input type="radio" name="qpers4" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers4" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers4" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers4" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers4" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">5. Dynamisme et Engagement</td>
+                        <td><input type="radio" name="qpers5" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers5" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers5" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers5" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers5" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">6. Motivation et Esprit d'initiative</td>
+                        <td><input type="radio" name="qpers6" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers6" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers6" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers6" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers6" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">7. Volonté de se Perfectionner</td>
+                        <td><input type="radio" name="qpers7" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers7" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers7" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers7" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers7" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">8. Degré d'autonomie</td>
+                        <td><input type="radio" name="qpers8" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers8" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers8" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers8" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers8" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">9. Aptitude à déléguer</td>
+                        <td><input type="radio" name="qpers9" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers9" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers9" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers9" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers9" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">10. Aptitude à communiquer</td>
+                        <td><input type="radio" name="qpers10" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers10" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers10" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers10" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qpers10" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr><td colspan="7" style="height: 5px; background-color: #95a5a6;"></td></tr>
+
+                    <!-- Qualités Relationnelles -->
+                    <tr>
+                        <td rowspan="11" style="font-weight: bold; background-color: #ecf0f1;">3. Qualités Relationnelles</td>
+                        <td class="text-left">1. Esprit d'équipe</td>
+                        <td><input type="radio" name="qrel1" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel1" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel1" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel1" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel1" value="100" onchange="calculateScores()"></td>
+                        <td rowspan="11" style="background-color: #d5dbdb; font-weight: bold; font-size: 16px;">
+                            <div>Total 3.</div>
+                            <div id="totalQRel" class="calculated-score" style="margin-top: 10px;">0 %</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">2. Respect de la discipline</td>
+                        <td><input type="radio" name="qrel2" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel2" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel2" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel2" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel2" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">3. Aptitudes managériales</td>
+                        <td><input type="radio" name="qrel3" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel3" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel3" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel3" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel3" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">4. Sens de la hiérarchie</td>
+                        <td><input type="radio" name="qrel4" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel4" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel4" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel4" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel4" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">5. Aptitudes à informer</td>
+                        <td><input type="radio" name="qrel5" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel5" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel5" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel5" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel5" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">6. Aptitude à s'informer</td>
+                        <td><input type="radio" name="qrel6" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel6" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel6" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel6" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel6" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">7. Disponibilité</td>
+                        <td><input type="radio" name="qrel7" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel7" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel7" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel7" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel7" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">8. Sociabilité</td>
+                        <td><input type="radio" name="qrel8" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel8" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel8" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel8" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel8" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">9. Comportement au travail</td>
+                        <td><input type="radio" name="qrel9" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel9" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel9" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel9" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel9" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">10. Leadership</td>
+                        <td><input type="radio" name="qrel10" value="20" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel10" value="40" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel10" value="60" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel10" value="80" onchange="calculateScores()"></td>
+                        <td><input type="radio" name="qrel10" value="100" onchange="calculateScores()"></td>
+                    </tr>
+                    <tr><td colspan="7" style="height: 5px; background-color: #95a5a6;"></td></tr>
+                </tbody>
+            </table>
+
+            <div class="score-display">
+                Score N°2 (Total 1+2+3) / 3 = <span class="calculated-score" id="scoreN2">0</span> %
+            </div>
+        </div>
+
+        <!-- Section III: Score Final -->
+        <div class="section">
+            <div class="section-title">III. SCORE FINAL (À faire par N+1)</div>
+            <p style="margin-bottom: 15px;">Le score final est égal à la somme des scores (N°1 + N°2) / 2. %</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>SCORE FINAL</th>
+                        <th>N°1</th>
+                        <th>N°2</th>
+                        <th>TOTAL</th>
+                        <th>SCORE FINAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: bold;">Résultat</td>
+                        <td><span id="finalN1" class="calculated-score">0</span> %</td>
+                        <td><span id="finalN2" class="calculated-score">0</span> %</td>
+                        <td><span id="finalTotal" class="calculated-score">0</span> %</td>
+                        <td style="background-color: #3498db; color: white; font-weight: bold; font-size: 18px;">
+                            <span id="scoreFinal">0</span> %
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section IV: Remarques et Observations -->
+        <div class="section">
+            <div class="section-title">IV. REMARQUES ET OBSERVATIONS</div>
+            
+            <div class="observations">
+                <div class="observation-block">
+                    <div class="observation-title">4.1. De l'Evaluateur N+1 sur l'Evalué N</div>
+                    
+                    <div class="observation-subtitle">I. Points forts</div>
+                    <input type="text" class="observation-input" placeholder="1.">
+                    <input type="text" class="observation-input" placeholder="2.">
+                    <input type="text" class="observation-input" placeholder="3.">
+                    
+                    <div class="observation-subtitle">II. Points faibles</div>
+                    <input type="text" class="observation-input" placeholder="1.">
+                    <input type="text" class="observation-input" placeholder="2.">
+                    <input type="text" class="observation-input" placeholder="3.">
+                    
+                    <div class="observation-subtitle">III. Axes de progrès</div>
+                    <input type="text" class="observation-input" placeholder="1.">
+                    <input type="text" class="observation-input" placeholder="2.">
+                    <input type="text" class="observation-input" placeholder="3.">
+                </div>
+
+                <div class="observation-block">
+                    <div class="observation-title">4.2. De l'Evalué N sur lui-même et sur l'évaluation</div>
+                    
+                    <div class="observation-subtitle">I. Ses réussites</div>
+                    <input type="text" class="observation-input" placeholder="1.">
+                    <input type="text" class="observation-input" placeholder="2.">
+                    <input type="text" class="observation-input" placeholder="3.">
+                    
+                    <div class="observation-subtitle">II. Ses difficultés</div>
+                    <input type="text" class="observation-input" placeholder="1.">
+                    <input type="text" class="observation-input" placeholder="2.">
+                    <input type="text" class="observation-input" placeholder="3.">
+                    
+                    <div class="observation-subtitle">III. Ses souhaits</div>
+                    <input type="text" class="observation-input" placeholder="1.">
+                    <input type="text" class="observation-input" placeholder="2.">
+                    <input type="text" class="observation-input" placeholder="3.">
+                </div>
+            </div>
+        </div>
+
+        <!-- Section V: Validation -->
+        <div class="section">
+            <div class="section-title">V. VALIDATION DE L'ÉVALUATION</div>
+            <p style="margin-bottom: 20px; text-align: center; font-style: italic;">
+                C'est la signature pour l'accord des parties N et N+1, et la validation par N+2.
+            </p>
+
+            <div class="signatures">
+                <div class="signature-box">
+                    <h3>SIGNATURES</h3>
+                    <div style="font-weight: bold; margin-bottom: 10px;">Prénom et Nom (N)</div>
+                    <input type="text" id="signatureNomN" placeholder="Prénom et Nom">
+                    <div class="signature-area">Visa</div>
+                    <input type="date" id="signatureDateN" placeholder="Date">
+                </div>
+
+                <div class="signature-box">
+                    <h3>&nbsp;</h3>
+                    <div style="font-weight: bold; margin-bottom: 10px;">Prénom et Nom (N+1)</div>
+                    <input type="text" id="signatureNomN1" placeholder="Prénom et Nom">
+                    <div class="signature-area">Visa</div>
+                    <input type="date" id="signatureDateN1" placeholder="Date">
+                </div>
+
+                <div class="signature-box">
+                    <h3>&nbsp;</h3>
+                    <div style="font-weight: bold; margin-bottom: 10px;">Prénom et Nom (N+2)</div>
+                    <input type="text" id="signatureNomN2" placeholder="Prénom et Nom">
+                    <div class="signature-area">Visa</div>
+                    <input type="date" id="signatureDateN2" placeholder="Date">
+                </div>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>N.B.</strong> Transmettre la fiche à la DRH pour suite utile
+        </div>
+
+        <div class="button-container">
+            <button onclick="saveAsDraft()">💾 Sauvegarder brouillon</button>
+            <button onclick="loadForm()">📂 Charger formulaire</button>
+            <button id="submitBtn" class="submit-btn" onclick="submitToN2()">✅ Soumettre à N+2</button>
+            <button id="validateBtn" class="validate-btn" onclick="validateByN2()" style="display: none;">✓ Valider (N+2)</button>
+            <button onclick="window.print()">🖨️ Imprimer</button>
+            <button onclick="resetForm()">🔄 Réinitialiser</button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle"></div>
+            <div id="modalMessage"></div>
+            <div class="modal-buttons">
+                <button onclick="closeModal()">Annuler</button>
+                <button id="confirmBtn" class="submit-btn">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales pour le statut du formulaire
+        let formStatus = 'draft'; // draft, submitted, validated
+        
+        // Fonction pour calculer tous les scores
+        function calculateScores() {
+            // Score N°1 - Objectifs
+            let totalObjectifs = 0;
+            let countObjectifs = 0;
+            for (let i = 1; i <= 5; i++) {
+                const radios = document.getElementsByName('taux' + i);
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        totalObjectifs += parseInt(radio.value);
+                        countObjectifs++;
+                        break;
+                    }
+                }
+            }
+            const scoreN1 = countObjectifs > 0 ? Math.round(totalObjectifs / countObjectifs) : 0;
+            document.getElementById('scoreN1').textContent = scoreN1;
+            document.getElementById('finalN1').textContent = scoreN1;
+
+            // Score N°2 - Qualités
+            // Qualités Professionnelles
+            let totalQP = 0;
+            let countQP = 0;
+            for (let i = 1; i <= 10; i++) {
+                const radios = document.getElementsByName('qp' + i);
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        totalQP += parseInt(radio.value);
+                        countQP++;
+                        break;
+                    }
+                }
+            }
+            const avgQP = countQP > 0 ? Math.round(totalQP / countQP) : 0;
+            document.getElementById('totalQP').textContent = avgQP + ' %';
+
+            // Qualités Personnelles
+            let totalQPers = 0;
+            let countQPers = 0;
+            for (let i = 1; i <= 10; i++) {
+                const radios = document.getElementsByName('qpers' + i);
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        totalQPers += parseInt(radio.value);
+                        countQPers++;
+                        break;
+                    }
+                }
+            }
+            const avgQPers = countQPers > 0 ? Math.round(totalQPers / countQPers) : 0;
+            document.getElementById('totalQPers').textContent = avgQPers + ' %';
+
+            // Qualités Relationnelles
+            let totalQRel = 0;
+            let countQRel = 0;
+            for (let i = 1; i <= 10; i++) {
+                const radios = document.getElementsByName('qrel' + i);
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        totalQRel += parseInt(radio.value);
+                        countQRel++;
+                        break;
+                    }
+                }
+            }
+            const avgQRel = countQRel > 0 ? Math.round(totalQRel / countQRel) : 0;
+            document.getElementById('totalQRel').textContent = avgQRel + ' %';
+
+            // Score N°2 total
+            const scoreN2 = Math.round((avgQP + avgQPers + avgQRel) / 3);
+            document.getElementById('scoreN2').textContent = scoreN2;
+            document.getElementById('finalN2').textContent = scoreN2;
+
+            // Score Final
+            const totalFinal = scoreN1 + scoreN2;
+            const scoreFinal = Math.round(totalFinal / 2);
+            document.getElementById('finalTotal').textContent = totalFinal;
+            document.getElementById('scoreFinal').textContent = scoreFinal;
+        }
+
+        // Fonction pour collecter toutes les données du formulaire
+        function collectFormData() {
+            const data = {
+                status: formStatus,
+                date: document.getElementById('formDate').value,
+                direction: document.getElementById('direction').value,
+                service: document.getElementById('service').value,
+                evaluateurNom: document.getElementById('evaluateurNom').value,
+                evaluateurFonction: document.getElementById('evaluateurFonction').value,
+                evalueNom: document.getElementById('evalueNom').value,
+                evalueFonction: document.getElementById('evalueFonction').value,
+                categorie: document.getElementById('categorie').value,
+                emailN2: document.getElementById('emailN2').value,
+                annee: document.getElementById('annee').value,
+                objectifs: [],
+                qualites: {},
+                observations: {},
+                signatures: {}
+            };
+
+            // Objectifs
+            for (let i = 1; i <= 5; i++) {
+                const radios = document.getElementsByName('taux' + i);
+                let selectedValue = null;
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        selectedValue = radio.value;
+                        break;
+                    }
+                }
+                data.objectifs.push({
+                    objectif: document.getElementById('obj' + i)?.value || '',
+                    indicateur: document.getElementById('ind' + i)?.value || '',
+                    taux: selectedValue
+                });
+            }
+
+            // Qualités
+            const qualities = ['qp', 'qpers', 'qrel'];
+            qualities.forEach(prefix => {
+                data.qualites[prefix] = [];
+                for (let i = 1; i <= 10; i++) {
+                    const radios = document.getElementsByName(prefix + i);
+                    let selectedValue = null;
+                    for (const radio of radios) {
+                        if (radio.checked) {
+                            selectedValue = radio.value;
+                            break;
+                        }
+                    }
+                    data.qualites[prefix].push(selectedValue);
+                }
+            });
+
+            // Observations
+            const observationInputs = document.querySelectorAll('.observation-input');
+            data.observations.items = Array.from(observationInputs).map(input => input.value);
+
+            // Signatures
+            data.signatures = {
+                N: {
+                    nom: document.getElementById('signatureNomN')?.value || '',
+                    date: document.getElementById('signatureDateN')?.value || ''
+                },
+                N1: {
+                    nom: document.getElementById('signatureNomN1')?.value || '',
+                    date: document.getElementById('signatureDateN1')?.value || ''
+                },
+                N2: {
+                    nom: document.getElementById('signatureNomN2')?.value || '',
+                    date: document.getElementById('signatureDateN2')?.value || ''
+                }
+            };
+
+            return data;
+        }
+
+        // Fonction pour charger les données dans le formulaire
+        function loadFormData(data) {
+            formStatus = data.status || 'draft';
+            updateStatusDisplay();
+
+            document.getElementById('formDate').value = data.date || '';
+            document.getElementById('direction').value = data.direction || '';
+            document.getElementById('service').value = data.service || '';
+            document.getElementById('evaluateurNom').value = data.evaluateurNom || '';
+            document.getElementById('evaluateurFonction').value = data.evaluateurFonction || '';
+            document.getElementById('evalueNom').value = data.evalueNom || '';
+            document.getElementById('evalueFonction').value = data.evalueFonction || '';
+            document.getElementById('categorie').value = data.categorie || '';
+            document.getElementById('emailN2').value = data.emailN2 || '';
+            document.getElementById('annee').value = data.annee || '';
+
+            // Objectifs
+            if (data.objectifs) {
+                data.objectifs.forEach((obj, i) => {
+                    const index = i + 1;
+                    if (document.getElementById('obj' + index)) {
+                        document.getElementById('obj' + index).value = obj.objectif || '';
+                    }
+                    if (document.getElementById('ind' + index)) {
+                        document.getElementById('ind' + index).value = obj.indicateur || '';
+                    }
+                    if (obj.taux) {
+                        const radios = document.getElementsByName('taux' + index);
+                        for (const radio of radios) {
+                            if (radio.value === obj.taux) {
+                                radio.checked = true;
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Qualités
+            if (data.qualites) {
+                Object.keys(data.qualites).forEach(prefix => {
+                    data.qualites[prefix].forEach((value, i) => {
+                        if (value) {
+                            const radios = document.getElementsByName(prefix + (i + 1));
+                            for (const radio of radios) {
+                                if (radio.value === value) {
+                                    radio.checked = true;
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Observations
+            if (data.observations && data.observations.items) {
+                const observationInputs = document.querySelectorAll('.observation-input');
+                data.observations.items.forEach((value, i) => {
+                    if (observationInputs[i]) {
+                        observationInputs[i].value = value || '';
+                    }
+                });
+            }
+
+            // Signatures
+            if (data.signatures) {
+                if (data.signatures.N) {
+                    document.getElementById('signatureNomN').value = data.signatures.N.nom || '';
+                    document.getElementById('signatureDateN').value = data.signatures.N.date || '';
+                }
+                if (data.signatures.N1) {
+                    document.getElementById('signatureNomN1').value = data.signatures.N1.nom || '';
+                    document.getElementById('signatureDateN1').value = data.signatures.N1.date || '';
+                }
+                if (data.signatures.N2) {
+                    document.getElementById('signatureNomN2').value = data.signatures.N2.nom || '';
+                    document.getElementById('signatureDateN2').value = data.signatures.N2.date || '';
+                }
+            }
+
+            calculateScores();
+            
+            // Verrouiller le formulaire si soumis
+            if (formStatus === 'submitted' || formStatus === 'validated') {
+                lockFormFields();
+            }
+        }
+
+        // Fonction pour sauvegarder comme brouillon
+        function saveAsDraft() {
+            const data = collectFormData();
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `evaluation_${data.evalueNom || 'brouillon'}_${new Date().getTime()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ Brouillon sauvegardé avec succès !');
+        }
+
+        // Fonction pour charger un formulaire
+        function loadForm() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            loadFormData(data);
+                            alert('✅ Formulaire chargé avec succès !');
+                        } catch (error) {
+                            alert('❌ Erreur lors du chargement du fichier');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        // Fonction pour soumettre à N+2
+        function submitToN2() {
+            // Vérifier que le formulaire est complet
+            if (!validateFormCompletion()) {
+                alert('⚠️ Veuillez remplir tous les champs obligatoires avant de soumettre.');
+                return;
+            }
+
+            showSubmitModal();
+        }
+
+        // Fonction pour afficher le modal de soumission avec options email
+        function showSubmitModal() {
+            const data = collectFormData();
+            const emailN2 = data.emailN2;
+            
+            let modalContent = `
+                <div class="modal-header">Soumettre le formulaire à N+2</div>
+                <p>Êtes-vous sûr de vouloir soumettre ce formulaire à N+2 ? Une fois soumis, vous ne pourrez plus le modifier.</p>
+            `;
+
+            if (emailN2) {
+                modalContent += `
+                    <div style="background-color: #d4edda; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                        <strong>📧 Destinataire :</strong> ${emailN2}
+                    </div>
+                    <div style="margin: 20px 0;">
+                        <strong>Choisissez le mode d'envoi :</strong>
+                        <div class="email-option" onclick="selectEmailOption('manual')">
+                            <input type="radio" name="emailOption" id="optionManual" value="manual" checked>
+                            <label for="optionManual">
+                                <strong>📨 Envoyer par email (Recommandé)</strong><br>
+                                <small>Votre logiciel de messagerie s'ouvrira avec un email pré-rempli destiné à ${emailN2}</small>
+                            </label>
+                        </div>
+                        <div class="email-option" onclick="selectEmailOption('auto')">
+                            <input type="radio" name="emailOption" id="optionAuto" value="auto">
+                            <label for="optionAuto">
+                                <strong>📧 Envoyer automatiquement</strong><br>
+                                <small>Envoi direct par email (nécessite configuration EmailJS)</small>
+                            </label>
+                        </div>
+                        <div class="email-option" onclick="selectEmailOption('download')">
+                            <input type="radio" name="emailOption" id="optionDownload" value="download">
+                            <label for="optionDownload">
+                                <strong>💾 Télécharger et envoyer manuellement plus tard</strong><br>
+                                <small>Le fichier sera téléchargé pour envoi manuel ultérieur</small>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            } else {
+                modalContent += `
+                    <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                        <strong>⚠️ ATTENTION :</strong> Aucun email N+2 n'est renseigné !<br>
+                        <small>Le formulaire ne pourra pas être envoyé automatiquement au N+2. Veuillez renseigner son email dans les informations générales.</small>
+                    </div>
+                    <p style="text-align: center; margin: 15px 0;">
+                        Le fichier sera uniquement téléchargé localement.
+                    </p>
+                `;
+            }
+
+            modalContent += `
+                <div class="modal-buttons">
+                    <button onclick="closeModal()">Annuler</button>
+                    <button class="submit-btn" onclick="confirmSubmission()">Confirmer la soumission</button>
+                </div>
+            `;
+
+            document.getElementById('confirmModal').innerHTML = modalContent;
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        // Fonction pour sélectionner une option email
+        function selectEmailOption(option) {
+            document.getElementById('option' + option.charAt(0).toUpperCase() + option.slice(1)).checked = true;
+        }
+
+        // Fonction pour confirmer la soumission
+        function confirmSubmission() {
+            const data = collectFormData();
+            formStatus = 'submitted';
+            data.status = 'submitted';
+            
+            // Créer le fichier JSON
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const fileName = `evaluation_soumise_${data.evalueNom.replace(/\s/g, '_')}_${new Date().getTime()}.json`;
+            
+            // Déterminer l'option choisie
+            let selectedOption = 'download';
+            const radioButtons = document.getElementsByName('emailOption');
+            for (const radio of radioButtons) {
+                if (radio.checked) {
+                    selectedOption = radio.value;
+                    break;
+                }
+            }
+
+            // Télécharger le fichier
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            // Envoyer l'email selon l'option
+            if (data.emailN2 && selectedOption !== 'download') {
+                if (selectedOption === 'auto') {
+                    sendEmailAutomatic(data, json, fileName);
+                } else if (selectedOption === 'manual') {
+                    sendEmailManual(data, fileName);
+                }
+            }
+
+            // Mettre à jour l'interface
+            updateStatusDisplay();
+            lockFormFields();
+            closeModal();
+            
+            alert('✅ Formulaire soumis à N+2 avec succès !' + 
+                  (data.emailN2 && selectedOption !== 'download' ? '\n📧 Email envoyé.' : ''));
+        }
+
+        // Fonction pour générer la page de validation N+2
+        function generateN2ValidationPage(data, jsonFileName) {
+            const scoreN1 = document.getElementById('scoreN1').textContent;
+            const scoreN2 = document.getElementById('scoreN2').textContent;
+            const scoreFinal = document.getElementById('scoreFinal').textContent;
+            const totalQP = document.getElementById('totalQP').textContent;
+            const totalQPers = document.getElementById('totalQPers').textContent;
+            const totalQRel = document.getElementById('totalQRel').textContent;
+            
+            // Générer le HTML complet pour N+2
+            const htmlContent = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation N+2 - Évaluation de ${data.evalueNom}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background-color: white; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; font-size: 24px; text-transform: uppercase; }
+        .banner { background-color: #d1ecf1; border: 2px solid #17a2b8; color: #0c5460; padding: 15px; margin-bottom: 20px; border-radius: 5px; text-align: center; font-weight: bold; }
+        .info-grid { display: grid; grid-template-columns: 300px 1fr; gap: 15px; margin-bottom: 20px; }
+        .info-label { font-weight: bold; color: #555; }
+        .info-value { padding: 8px; background-color: #f8f9fa; border-radius: 4px; }
+        .section { margin-bottom: 40px; }
+        .section-title { background-color: #2c3e50; color: white; padding: 10px 15px; font-weight: bold; font-size: 16px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        table th, table td { border: 1px solid #333; padding: 8px; text-align: center; }
+        table th { background-color: #34495e; color: white; font-weight: bold; }
+        .score-display { background-color: #ecf0f1; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; margin: 20px 0; border-radius: 5px; }
+        .calculated-score { background-color: #3498db; color: white; padding: 5px; border-radius: 3px; font-weight: bold; }
+        .signature-section { border: 2px solid #27ae60; background-color: #d4edda; padding: 20px; margin: 30px 0; border-radius: 10px; }
+        .signature-box { border: 2px solid #333; padding: 15px; margin: 10px 0; }
+        .signature-box input { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #3498db; border-radius: 4px; font-size: 14px; }
+        .signature-area { height: 100px; border: 2px dashed #999; margin: 10px 0; background-color: #fafafa; display: flex; align-items: center; justify-content: center; color: #999; }
+        button { background-color: #27ae60; color: white; padding: 15px 40px; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; margin: 10px; }
+        button:hover { background-color: #229954; }
+        .readonly { background-color: #e9ecef; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Validation N+2 - Formulaire d'Évaluation</h1>
+        
+        <div class="banner">
+            📋 FORMULAIRE SOUMIS POUR VALIDATION - Veuillez consulter, signer et valider ci-dessous
+        </div>
+
+        <div class="section">
+            <div class="section-title">INFORMATIONS GÉNÉRALES</div>
+            <div class="info-grid">
+                <div class="info-label">Direction :</div>
+                <div class="info-value readonly">${data.direction}</div>
+                <div class="info-label">Service :</div>
+                <div class="info-value readonly">${data.service}</div>
+                <div class="info-label">Évaluateur (N+1) :</div>
+                <div class="info-value readonly">${data.evaluateurNom}</div>
+                <div class="info-label">Fonction :</div>
+                <div class="info-value readonly">${data.evaluateurFonction}</div>
+                <div class="info-label">Évalué (N) :</div>
+                <div class="info-value readonly">${data.evalueNom}</div>
+                <div class="info-label">Fonction :</div>
+                <div class="info-value readonly">${data.evalueFonction}</div>
+                <div class="info-label">Catégorie :</div>
+                <div class="info-value readonly">${data.categorie}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">RÉSULTATS DE L'ÉVALUATION</div>
+            <div class="score-display">Score N°1 (Objectifs) : <span class="calculated-score">${scoreN1} %</span></div>
+            <div class="score-display">Score N°2 (Compétences) : <span class="calculated-score">${scoreN2} %</span></div>
+            <div class="score-display" style="background-color: #3498db; color: white; font-size: 22px;">
+                SCORE FINAL : <span style="background-color: #2c3e50; padding: 10px; border-radius: 5px;">${scoreFinal} %</span>
+            </div>
+        </div>
+
+        <div class="signature-section">
+            <h2 style="color: #27ae60; margin-bottom: 20px;">✍️ VOTRE VALIDATION (N+2)</h2>
+            <p style="margin-bottom: 20px;"><strong>Important :</strong> En signant ci-dessous, vous validez cette évaluation.</p>
+            
+            <div class="signature-box">
+                <label style="font-weight: bold; display: block; margin-bottom: 10px;">Votre prénom et nom :</label>
+                <input type="text" id="signatureNomN2" placeholder="Entrez votre prénom et nom complet">
+                
+                <label style="font-weight: bold; display: block; margin: 20px 0 10px 0;">Date de validation :</label>
+                <input type="date" id="signatureDateN2">
+                
+                <div style="margin-top: 20px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">Signature (zone visa) :</label>
+                    <div class="signature-area">✍️ Apposez votre visa ici</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="validateEvaluation()">✅ VALIDER L'ÉVALUATION</button>
+                <button onclick="window.print()" style="background-color: #3498db;">🖨️ Imprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const evaluationData = ${JSON.stringify(data)};
+        
+        function validateEvaluation() {
+            const nom = document.getElementById('signatureNomN2').value;
+            const date = document.getElementById('signatureDateN2').value;
+            
+            if (!nom || !date) {
+                alert('⚠️ Veuillez remplir votre nom et la date avant de valider.');
+                return;
+            }
+            
+            // Mettre à jour les données avec la signature N+2
+            evaluationData.signatures.N2 = { nom: nom, date: date };
+            evaluationData.status = 'validated';
+            
+            // Télécharger le fichier validé
+            const json = JSON.stringify(evaluationData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'evaluation_validee_${data.evalueNom.replace(/\s/g, '_')}_' + new Date().getTime() + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Évaluation validée avec succès !\\n\\nLe fichier a été téléchargé.\\nVeuillez le transmettre à la DRH.');
+        }
+    </script>
+</body>
+</html>`;
+
+            // Télécharger le fichier HTML pour N+2
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `validation_N2_${data.evalueNom.replace(/\s/g, '_')}_${new Date().getTime()}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Fonction pour envoyer l'email manuellement (via client email)
+        function sendEmailManual(data, fileName) {
+            const scoreN1 = document.getElementById('scoreN1').textContent;
+            const scoreN2 = document.getElementById('scoreN2').textContent;
+            const scoreFinal = document.getElementById('scoreFinal').textContent;
+            
+            // Générer le fichier HTML pour N+2
+            generateN2ValidationPage(data, fileName);
+            
+            const subject = encodeURIComponent(`Évaluation de ${data.evalueNom} - Validation requise`);
+            const body = encodeURIComponent(
+`Bonjour,
+
+Vous avez reçu un formulaire d'évaluation qui nécessite votre validation en tant que N+2.
+
+════════════════════════════════════════════════════════════════
+                    FORMULAIRE D'ÉVALUATION
+════════════════════════════════════════════════════════════════
+
+📋 INFORMATIONS GÉNÉRALES
+────────────────────────────────────
+Évalué (N)          : ${data.evalueNom}
+Fonction            : ${data.evalueFonction}
+Direction           : ${data.direction}
+Service             : ${data.service}
+
+Évaluateur (N+1)    : ${data.evaluateurNom}
+Fonction            : ${data.evaluateurFonction}
+
+📊 RÉSULTATS DE L'ÉVALUATION
+────────────────────────────────────
+Score N°1 (Objectifs)      : ${scoreN1}%
+Score N°2 (Compétences)    : ${scoreN2}%
+═══════════════════════════════════
+SCORE FINAL                : ${scoreFinal}%
+═══════════════════════════════════
+
+✅ FICHIERS JOINTS À CET EMAIL :
+────────────────────────────────────
+1. ${fileName} - Données du formulaire
+2. validation_N2_${data.evalueNom.replace(/\\s/g, '_')}.html - Formulaire pré-rempli pour validation
+
+✅ COMMENT VALIDER ?
+────────────────────────────────────
+OPTION 1 (RECOMMANDÉE) :
+→ Ouvrez le fichier HTML joint "validation_N2_..."
+→ Le formulaire s'affichera déjà rempli
+→ Signez et validez directement
+
+OPTION 2 :
+→ Chargez le fichier JSON dans le formulaire principal
+
+⏰ Merci de traiter cette évaluation dans les meilleurs délais.
+
+Cordialement,
+${data.evaluateurNom}
+${data.evaluateurFonction}
+`);
+
+            window.location.href = `mailto:${data.emailN2}?subject=${subject}&body=${body}`;
+        }
+
+        // Fonction pour envoyer l'email automatiquement (nécessite EmailJS ou service similaire)
+        function sendEmailAutomatic(data, jsonData, fileName) {
+            // Note: Cette fonction nécessite EmailJS ou un service d'email
+            // Pour une implémentation complète, vous devez :
+            // 1. Créer un compte sur EmailJS (https://www.emailjs.com/)
+            // 2. Ajouter le script EmailJS
+            // 3. Configurer votre service et template
+            
+            alert('ℹ️ L\'envoi automatique nécessite la configuration d\'un service d\'email (EmailJS).\n\n' +
+                  'Pour l\'instant, votre client email va s\'ouvrir avec un message pré-rempli.');
+            
+            sendEmailManual(data, fileName);
+            
+            /* Exemple d'implémentation avec EmailJS :
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+                to_email: data.emailN2,
+                evalueNom: data.evalueNom,
+                evaluateurNom: data.evaluateurNom,
+                scoreFinal: document.getElementById('scoreFinal').textContent,
+                jsonData: jsonData
+            }).then(
+                function(response) {
+                    console.log('Email envoyé!', response);
+                },
+                function(error) {
+                    console.error('Erreur d\'envoi:', error);
+                    sendEmailManual(data, fileName);
+                }
+            );
+            */
+        }
+
+        // Fonction pour valider par N+2
+        function validateByN2() {
+            showModal(
+                'Valider le formulaire (N+2)',
+                'En tant que N+2, confirmez-vous la validation de cette évaluation ?',
+                function() {
+                    formStatus = 'validated';
+                    updateStatusDisplay();
+                    
+                    // Sauvegarder la version validée
+                    const data = collectFormData();
+                    const json = JSON.stringify(data, null, 2);
+                    const blob = new Blob([json], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `evaluation_validee_${data.evalueNom}_${new Date().getTime()}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    closeModal();
+                    alert('✅ Formulaire validé ! Le fichier a été téléchargé. Transmettez-le à la DRH.');
+                }
+            );
+        }
+
+        // Fonction pour valider la complétion du formulaire
+        function validateFormCompletion() {
+            // Vérifier les champs de base
+            const requiredFields = ['direction', 'service', 'evaluateurNom', 'evaluateurFonction', 
+                                   'evalueNom', 'evalueFonction', 'categorie', 'emailN2', 'annee'];
+            
+            for (const fieldId of requiredFields) {
+                const field = document.getElementById(fieldId);
+                if (!field.value) {
+                    if (fieldId === 'emailN2') {
+                        alert('⚠️ L\'email du N+2 est obligatoire pour envoyer le formulaire automatiquement !');
+                    }
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // Fonction pour verrouiller les champs du formulaire
+        function lockFormFields() {
+            // Désactiver tous les inputs sauf les signatures de N+2
+            const allInputs = document.querySelectorAll('input:not(.signature-box input)');
+            allInputs.forEach(input => {
+                input.disabled = true;
+            });
+
+            // Désactiver le bouton de soumission
+            document.getElementById('submitBtn').style.display = 'none';
+            
+            // Afficher le bouton de validation pour N+2
+            if (formStatus === 'submitted') {
+                document.getElementById('validateBtn').style.display = 'inline-block';
+            }
+        }
+
+        // Fonction pour mettre à jour l'affichage du statut
+        function updateStatusDisplay() {
+            const banner = document.getElementById('statusBanner');
+            const statusText = document.getElementById('statusText');
+            
+            banner.style.display = 'block';
+            banner.className = 'status-banner';
+            
+            switch(formStatus) {
+                case 'draft':
+                    banner.classList.add('status-draft');
+                    statusText.textContent = '📝 Brouillon - En cours de remplissage par N+1';
+                    break;
+                case 'submitted':
+                    banner.classList.add('status-submitted');
+                    statusText.textContent = '📤 Soumis à N+2 - En attente de validation';
+                    break;
+                case 'validated':
+                    banner.classList.add('status-validated');
+                    statusText.textContent = '✅ Validé par N+2 - Prêt pour transmission à la DRH';
+                    break;
+            }
+        }
+
+        // Fonction pour afficher le modal
+        function showModal(title, message, onConfirm) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('confirmModal').style.display = 'block';
+            
+            document.getElementById('confirmBtn').onclick = onConfirm;
+        }
+
+        // Fonction pour fermer le modal
+        function closeModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // Fonction pour réinitialiser le formulaire
+        function resetForm() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser le formulaire ? Toutes les données seront perdues.')) {
+                formStatus = 'draft';
+                document.querySelectorAll('input').forEach(input => {
+                    input.disabled = false;
+                    if (input.type === 'radio' || input.type === 'checkbox') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+                calculateScores();
+                updateStatusDisplay();
+                document.getElementById('submitBtn').style.display = 'inline-block';
+                document.getElementById('validateBtn').style.display = 'none';
+            }
+        }
+
+        // Fermer le modal si on clique en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initialiser les scores au chargement
+        window.addEventListener('load', function() {
+            calculateScores();
+            updateStatusDisplay();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Connexion - SENICO</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .result-box {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .links {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .links a {
+            display: inline-block;
+            margin: 5px 10px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Test de Connexion SENICO</h1>
+        <p class="subtitle">Vérification de la connexion au serveur</p>
+
+        <div class="test-section">
+            <div class="test-title">📡 Test 1 : Connexion au serveur</div>
+            <div id="serverStatus" class="status loading">⏳ En attente...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">🗄️ Test 2 : Connexion à la base de données</div>
+            <div id="dbStatus" class="status loading">⏳ En attente...</div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">📋 Test 3 : Liste des évaluations</div>
+            <div id="evalStatus" class="status loading">⏳ En attente...</div>
+            <div id="evalResult" class="result-box" style="display:none;"></div>
+        </div>
+
+        <button onclick="runTests()">▶️ Lancer les tests</button>
+
+        <div class="links">
+            <a href="http://localhost:3001/login.html">🔐 Page de connexion</a>
+            <a href="http://localhost:3001/formulaire-online.html">📝 Nouveau formulaire</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+
+        function updateStatus(elementId, status, message) {
+            const el = document.getElementById(elementId);
+            el.className = `status ${status}`;
+            el.innerHTML = message;
+        }
+
+        async function runTests() {
+            // Test 1: Serveur
+            updateStatus('serverStatus', 'loading', '⏳ Test en cours...');
+            try {
+                const response = await fetch('http://localhost:3001/');
+                if (response.ok) {
+                    updateStatus('serverStatus', 'success', '✅ Serveur actif sur http://localhost:3001');
+                } else {
+                    updateStatus('serverStatus', 'error', `❌ Serveur répond avec erreur: ${response.status}`);
+                }
+            } catch (error) {
+                updateStatus('serverStatus', 'error', `❌ Impossible de contacter le serveur: ${error.message}`);
+                updateStatus('dbStatus', 'error', '❌ Serveur non accessible');
+                updateStatus('evalStatus', 'error', '❌ Serveur non accessible');
+                return;
+            }
+
+            // Test 2: Base de données (via endpoint /api/evaluations)
+            updateStatus('dbStatus', 'loading', '⏳ Test en cours...');
+            try {
+                const response = await fetch(`${API_URL}/evaluations`);
+                if (response.ok) {
+                    updateStatus('dbStatus', 'success', '✅ Connexion à MySQL réussie');
+                } else {
+                    updateStatus('dbStatus', 'error', `❌ Erreur base de données: ${response.status}`);
+                }
+            } catch (error) {
+                updateStatus('dbStatus', 'error', `❌ Erreur: ${error.message}`);
+            }
+
+            // Test 3: Liste des évaluations
+            updateStatus('evalStatus', 'loading', '⏳ Test en cours...');
+            try {
+                const response = await fetch(`${API_URL}/evaluations`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const count = data.evaluations ? data.evaluations.length : 0;
+                    updateStatus('evalStatus', 'success', `✅ ${count} évaluation(s) trouvée(s)`);
+                    
+                    const resultBox = document.getElementById('evalResult');
+                    resultBox.style.display = 'block';
+                    resultBox.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    updateStatus('evalStatus', 'error', `❌ Erreur: ${response.status}`);
+                }
+            } catch (error) {
+                updateStatus('evalStatus', 'error', `❌ Erreur: ${error.message}`);
+            }
+        }
+
+        // Lancer automatiquement au chargement
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>

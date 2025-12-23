@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard API</title>
+</head>
+<body>
+    <h1>Test Dashboard API</h1>
+    <button onclick="testAPI()">Tester API</button>
+    <pre id="result"></pre>
+    
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+        const userEmail = localStorage.getItem('userEmail');
+        const userRole = localStorage.getItem('userRole');
+        
+        document.body.innerHTML += `
+            <p>Email: ${userEmail}</p>
+            <p>Role: ${userRole}</p>
+        `;
+        
+        async function testAPI() {
+            const result = document.getElementById('result');
+            result.textContent = 'Chargement...';
+            
+            try {
+                let url;
+                if (userRole === 'N1') {
+                    url = `${API_URL}/evaluations/evaluator/${encodeURIComponent(userEmail)}`;
+                } else {
+                    url = `${API_URL}/evaluations/pending/${encodeURIComponent(userEmail)}`;
+                }
+                
+                console.log('Calling:', url);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                console.log('Response:', data);
+                result.textContent = JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                result.textContent = 'Erreur: ' + error.message;
+            }
+        }
+        
+        // Auto-test
+        testAPI();
+    </script>
+</body>
+</html>

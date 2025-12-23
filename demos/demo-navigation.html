@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démo Navigation - SENICO SA</title>
+    <link rel="stylesheet" href="navigation.css">
+    <script src="navigation.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .demo-grid {
+            display: grid;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .demo-card h2 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .demo-card p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn-demo {
+            width: 100%;
+            padding: 16px 24px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-demo.primary {
+            background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%);
+            box-shadow: 0 4px 15px rgba(74, 157, 95, 0.3);
+        }
+
+        .btn-demo.info {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-demo.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .btn-demo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .code-block .comment {
+            color: #95a5a6;
+        }
+
+        .code-block .keyword {
+            color: #3498db;
+        }
+
+        .code-block .string {
+            color: #2ecc71;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #ecf0f1;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list li span {
+            font-size: 20px;
+        }
+
+        .navigation-example {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .page-box {
+            background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .arrow {
+            font-size: 32px;
+            color: white;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .info-box .icon {
+            font-size: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            .navigation-example {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧭 Système de Navigation SENICO SA</h1>
+            <p>Bouton retour intelligent pour naviguer facilement entre les pages</p>
+        </div>
+
+        <div class="demo-grid">
+            <!-- Présentation -->
+            <div class="demo-card">
+                <h2>📋 Fonctionnalités</h2>
+                <ul class="feature-list">
+                    <li><span>✅</span> Bouton retour élégant sur toutes les pages</li>
+                    <li><span>🎯</span> Navigation intelligente avec historique</li>
+                    <li><span>🎨</span> Design moderne et responsive</li>
+                    <li><span>⚡</span> Animations fluides et intuitives</li>
+                    <li><span>📱</span> Adapté aux mobiles (icône uniquement)</li>
+                    <li><span>🔄</span> Retour automatique au dashboard si nécessaire</li>
+                </ul>
+            </div>
+
+            <!-- Exemple visuel -->
+            <div class="demo-card">
+                <h2>🎯 Exemple de Navigation</h2>
+                <p>Voici comment fonctionne le système de navigation entre les pages :</p>
+                
+                <div class="navigation-example">
+                    <div class="page-box">Login</div>
+                    <span class="arrow">→</span>
+                    <div class="page-box">Dashboard</div>
+                    <span class="arrow">→</span>
+                    <div class="page-box">Formulaire</div>
+                </div>
+
+                <div class="info-box">
+                    <span class="icon">💡</span>
+                    <div>
+                        <strong>Cliquez sur "Retour"</strong> depuis n'importe quelle page pour revenir à la page précédente dans votre historique de navigation
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test des pages -->
+            <div class="demo-card">
+                <h2>🚀 Tester la Navigation</h2>
+                <p>Cliquez sur ces liens pour naviguer entre les pages et tester le bouton retour :</p>
+                
+                <a href="dashboard.html" class="btn-demo primary">
+                    📊 Aller au Dashboard
+                </a>
+                
+                <a href="formulaire-online.html" class="btn-demo info">
+                    📝 Ouvrir le Formulaire
+                </a>
+                
+                <a href="validation.html" class="btn-demo warning">
+                    ✅ Espace Validation N+2
+                </a>
+                
+                <a href="drafts-manager.html" class="btn-demo primary">
+                    📄 Gestionnaire de Brouillons
+                </a>
+            </div>
+
+            <!-- Code JavaScript -->
+            <div class="demo-card">
+                <h2>💻 Utilisation dans votre code</h2>
+                <p>Trois façons d'utiliser le système de navigation :</p>
+
+                <h3 style="color: #2c3e50; margin: 20px 0 10px;">1️⃣ Bouton HTML simple</h3>
+                <div class="code-block">
+<span class="keyword">&lt;button</span> <span class="string">class</span>=<span class="string">"back-button"</span> <span class="string">onclick</span>=<span class="string">"navigateBack()"</span><span class="keyword">&gt;</span>
+    <span class="keyword">&lt;span</span> <span class="string">class</span>=<span class="string">"back-button-icon"</span><span class="keyword">&gt;</span>←<span class="keyword">&lt;/span&gt;</span>
+    <span class="keyword">&lt;span</span> <span class="string">class</span>=<span class="string">"back-button-text"</span><span class="keyword">&gt;</span>Retour<span class="keyword">&lt;/span&gt;</span>
+<span class="keyword">&lt;/button&gt;</span>
+                </div>
+
+                <h3 style="color: #2c3e50; margin: 20px 0 10px;">2️⃣ Fonction JavaScript</h3>
+                <div class="code-block">
+<span class="comment">// Retour à la page précédente</span>
+<span class="keyword">function</span> goBack() {
+    <span class="keyword">navigateBack</span>();
+}
+
+<span class="comment">// Retour au dashboard</span>
+<span class="keyword">function</span> goHome() {
+    <span class="keyword">goToDashboard</span>();
+}
+                </div>
+
+                <h3 style="color: #2c3e50; margin: 20px 0 10px;">3️⃣ Bouton dynamique avec JavaScript</h3>
+                <div class="code-block">
+<span class="comment">// Créer un bouton personnalisé</span>
+<span class="keyword">createBackButton</span>({
+    text: <span class="string">'Retour'</span>,
+    icon: <span class="string">'←'</span>,
+    variant: <span class="string">'default'</span>, <span class="comment">// ou 'alt', 'compact'</span>
+    position: <span class="string">'header'</span>
+});
+                </div>
+            </div>
+
+            <!-- Styles disponibles -->
+            <div class="demo-card">
+                <h2>🎨 Variantes du bouton</h2>
+                <p>Le système propose plusieurs styles de boutons :</p>
+
+                <h3 style="color: #2c3e50; margin: 20px 0 10px;">Style par défaut</h3>
+                <div style="background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%); padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+                    <button class="back-button">
+                        <span class="back-button-icon">←</span>
+                        <span class="back-button-text">Retour</span>
+                    </button>
+                </div>
+
+                <h3 style="color: #2c3e50; margin: 20px 0 10px;">Style alternatif (classe "alt")</h3>
+                <div style="background: #ecf0f1; padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+                    <button class="back-button alt">
+                        <span class="back-button-icon">←</span>
+                        <span class="back-button-text">Retour</span>
+                    </button>
+                </div>
+
+                <h3 style="color: #2c3e50; margin: 20px 0 10px;">Style compact (classe "compact")</h3>
+                <div style="background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%); padding: 20px; border-radius: 12px;">
+                    <button class="back-button compact">
+                        <span class="back-button-icon">←</span>
+                        <span class="back-button-text">Retour</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Responsive -->
+            <div class="demo-card">
+                <h2>📱 Comportement Mobile</h2>
+                <p>Sur mobile, le texte "Retour" disparaît automatiquement et seule l'icône ← reste visible pour gagner de l'espace.</p>
+                
+                <div class="info-box" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
+                    <span class="icon">📱</span>
+                    <div>
+                        Réduisez la fenêtre du navigateur pour voir l'adaptation automatique du bouton !
+                    </div>
+                </div>
+            </div>
+
+            <!-- Intégration -->
+            <div class="demo-card">
+                <h2>⚙️ Intégration</h2>
+                <p>Le système est déjà intégré dans toutes vos pages :</p>
+                
+                <ul class="feature-list">
+                    <li><span>✅</span> <strong>dashboard.html</strong> - Bouton dans le header</li>
+                    <li><span>✅</span> <strong>validation.html</strong> - Bouton alternatif en haut</li>
+                    <li><span>✅</span> <strong>formulaire-online.html</strong> - Bouton avant le titre</li>
+                    <li><span>✅</span> <strong>drafts-manager.html</strong> - Bouton dans le header</li>
+                </ul>
+            </div>
+        </div>
+
+        <div style="text-align: center; color: white; margin-top: 50px;">
+            <p style="font-size: 14px; opacity: 0.8;">✨ Système de Navigation SENICO SA - Version 1.0</p>
+            <button class="btn-demo primary" onclick="navigateBack()" style="max-width: 300px; margin: 20px auto;">
+                ← Tester le bouton retour maintenant
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Message de bienvenue dans la console
+        console.log('%c🧭 Démo du système de navigation', 'color: #4A9D5F; font-size: 16px; font-weight: bold;');
+        console.log('%cFonctions disponibles:', 'color: #3498db; font-weight: bold;');
+        console.log('navigateBack() - Retourner à la page précédente');
+        console.log('goToDashboard() - Aller au tableau de bord');
+        console.log('createBackButton(options) - Créer un bouton personnalisé');
+        
+        // Afficher l'historique de navigation
+        console.log('%cHistorique de navigation actuel:', 'color: #f39c12; font-weight: bold;');
+        const history = sessionStorage.getItem('navHistory');
+        if (history) {
+            console.table(JSON.parse(history));
+        } else {
+            console.log('Aucun historique pour le moment');
+        }
+    </script>
+</body>
+</html>

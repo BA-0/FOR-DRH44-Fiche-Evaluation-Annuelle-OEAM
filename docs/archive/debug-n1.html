@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Debug API N+1</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1e1e1e; color: #00ff00; }
+        pre { background: #000; padding: 15px; border-radius: 5px; overflow: auto; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .info { color: #00aaff; }
+        .error { color: #ff0000; }
+        .success { color: #00ff00; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Dashboard N+1</h1>
+    
+    <div class="info">
+        <h3>Informations de connexion :</h3>
+        <p>Email: <span id="email"></span></p>
+        <p>Role: <span id="role"></span></p>
+        <p>Name: <span id="name"></span></p>
+    </div>
+    
+    <button onclick="testEvaluatorAPI()">Tester API /evaluations/evaluator/</button>
+    <button onclick="testPendingAPI()">Tester API /evaluations/pending/</button>
+    <button onclick="checkDatabase()">Vérifier Base de Données</button>
+    
+    <h3>Résultat :</h3>
+    <pre id="result">Cliquez sur un bouton pour tester...</pre>
+    
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+        const email = localStorage.getItem('userEmail');
+        const role = localStorage.getItem('userRole');
+        const name = localStorage.getItem('userName');
+        
+        document.getElementById('email').textContent = email || 'Non défini';
+        document.getElementById('role').textContent = role || 'Non défini';
+        document.getElementById('name').textContent = name || 'Non défini';
+        
+        async function testEvaluatorAPI() {
+            const result = document.getElementById('result');
+            result.textContent = 'Chargement...';
+            
+            try {
+                const url = `${API_URL}/evaluations/evaluator/${encodeURIComponent(email)}`;
+                console.log('URL:', url);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                result.textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success && data.evaluations) {
+                    result.textContent += `\n\n✅ ${data.evaluations.length} évaluation(s) trouvée(s)`;
+                }
+            } catch (error) {
+                result.textContent = '❌ Erreur: ' + error.message;
+            }
+        }
+        
+        async function testPendingAPI() {
+            const result = document.getElementById('result');
+            result.textContent = 'Chargement...';
+            
+            try {
+                const url = `${API_URL}/evaluations/pending/${encodeURIComponent(email)}`;
+                console.log('URL:', url);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                result.textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success && data.evaluations) {
+                    result.textContent += `\n\n✅ ${data.evaluations.length} évaluation(s) trouvée(s)`;
+                }
+            } catch (error) {
+                result.textContent = '❌ Erreur: ' + error.message;
+            }
+        }
+        
+        async function checkDatabase() {
+            const result = document.getElementById('result');
+            result.textContent = 'Vérification de la base de données...\n\n';
+            
+            result.textContent += `Recherche des évaluations pour:\n`;
+            result.textContent += `- Email: ${email}\n`;
+            result.textContent += `- Nom: ${name}\n\n`;
+            
+            result.textContent += `La base devrait contenir des évaluations avec:\n`;
+            result.textContent += `- evaluateur_email = "${email}" OU\n`;
+            result.textContent += `- evaluateur_nom = "${name}"\n\n`;
+            
+            result.textContent += `Testez l'API ci-dessus pour voir les résultats.`;
+        }
+    </script>
+</body>
+</html>

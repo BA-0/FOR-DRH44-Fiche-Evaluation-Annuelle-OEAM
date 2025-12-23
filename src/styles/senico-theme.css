@@ -1,0 +1,236 @@
+/* ==========================================
+   SENICO SA - CHARTE GRAPHIQUE OFFICIELLE
+   Système d'Évaluation des Performances
+   Logo: VERT + ROUGE (Sénégalaise Industrie Commerce)
+   ========================================== */
+
+:root {
+    /* Couleurs principales SENICO SA - Logo officiel */
+    --senico-vert-primary: #4A9D5F;      /* Vert SENICO principal */
+    --senico-vert-secondary: #6BC17D;    /* Vert plus clair */
+    --senico-rouge-primary: #E30613;     /* Rouge SENICO "Sénégalaise..." */
+    --senico-rouge-secondary: #FF3B47;   /* Rouge plus clair */
+    
+    /* Dégradés signature SENICO */
+    --senico-gradient-main: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%);
+    --senico-gradient-accent: linear-gradient(135deg, #E30613 0%, #FF3B47 100%);
+    --senico-gradient-hero: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 50%, #E30613 100%);
+    
+    /* Couleurs de statut */
+    --senico-success: #27ae60;
+    --senico-warning: #f39c12;
+    --senico-danger: #e74c3c;
+    --senico-info: #3498db;
+    
+    /* Couleurs neutres */
+    --senico-dark: #2c3e50;
+    --senico-grey: #7f8c8d;
+    --senico-light-grey: #ecf0f1;
+    --senico-white: #ffffff;
+    
+    /* Ombres */
+    --senico-shadow-sm: 0 2px 8px rgba(74, 157, 95, 0.1);
+    --senico-shadow-md: 0 4px 15px rgba(74, 157, 95, 0.15);
+    --senico-shadow-lg: 0 10px 40px rgba(74, 157, 95, 0.25);
+    
+    /* Transitions */
+    --senico-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Logo SENICO SA */
+.senico-logo {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    background: var(--senico-gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+}
+
+.senico-logo-subtitle {
+    color: var(--senico-rouge-primary);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* Boutons SENICO */
+.senico-btn {
+    background: var(--senico-gradient-main);
+    color: var(--senico-white);
+    padding: 15px 35px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: var(--senico-transition);
+    box-shadow: var(--senico-shadow-md);
+}
+
+.senico-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--senico-shadow-lg);
+}
+
+.senico-btn-accent {
+    background: var(--senico-gradient-accent);
+}
+
+.senico-btn-success {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+/* En-têtes SENICO */
+.senico-header {
+    background: var(--senico-gradient-main);
+    color: var(--senico-white);
+    padding: 20px 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: var(--senico-shadow-md);
+}
+
+.senico-section-title {
+    background: var(--senico-gradient-main);
+    color: var(--senico-white);
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 8px;
+    box-shadow: var(--senico-shadow-sm);
+}
+
+/* Cartes SENICO */
+.senico-card {
+    background: var(--senico-white);
+    border: 2px solid var(--senico-light-grey);
+    border-radius: 12px;
+    padding: 25px;
+    transition: var(--senico-transition);
+    box-shadow: var(--senico-shadow-sm);
+}
+
+.senico-card:hover {
+    border-color: var(--senico-vert-primary);
+    box-shadow: var(--senico-shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Badges de statut SENICO */
+.senico-badge {
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.senico-badge-draft {
+    background-color: #fff3cd;
+    border: 2px solid var(--senico-warning);
+    color: #856404;
+}
+
+.senico-badge-submitted {
+    background-color: #d1ecf1;
+    border: 2px solid var(--senico-vert-secondary);
+    color: #0c5460;
+}
+
+.senico-badge-validated {
+    background-color: #d4edda;
+    border: 2px solid var(--senico-success);
+    color: #155724;
+}
+
+/* Inputs SENICO */
+.senico-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: var(--senico-transition);
+}
+
+.senico-input:focus {
+    border-color: var(--senico-vert-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 157, 95, 0.1);
+}
+
+/* Tableaux SENICO */
+.senico-table th {
+    background: var(--senico-gradient-main);
+    color: var(--senico-white);
+    font-weight: 600;
+}
+
+.senico-table tbody tr:hover {
+    background-color: rgba(227, 6, 19, 0.05);
+}
+
+/* Animations SENICO */
+@keyframes senico-slideIn {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes senico-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.senico-animate-slide {
+    animation: senico-slideIn 0.5s ease-out;
+}
+
+.senico-animate-fade {
+    animation: senico-fadeIn 0.5s ease-out;
+}
+
+/* Footer SENICO */
+.senico-footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--senico-grey);
+    font-size: 12px;
+    margin-top: 40px;
+    border-top: 2px solid var(--senico-light-grey);
+}
+
+.senico-footer strong {
+    color: var(--senico-vert-primary);
+    font-weight: 700;
+}
+
+/* Accents rouge pour points d'attention */
+.senico-accent {
+    color: var(--senico-rouge-primary);
+    font-weight: 600;
+}
+
+/* Conteneur principal */
+.senico-container {
+    background-color: var(--senico-white);
+    box-shadow: var(--senico-shadow-lg);
+    border-radius: 15px;
+}
+
+/* Indicateurs de score */
+.senico-score-box {
+    background: var(--senico-gradient-main);
+    color: var(--senico-white);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: var(--senico-shadow-md);
+}
+
+.senico-score-accent {
+    background: var(--senico-gradient-accent);
+}
