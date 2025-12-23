@@ -8,7 +8,7 @@
 USE formulaire_evaluation;
 
 -- ============================================================
--- ÉTAPE 1 : Supprimer les données corrompues
+-- ÉTAPE 1 : Supprimer les données corrompues existantes
 -- ============================================================
 DELETE FROM evaluations;
 DELETE FROM users;
