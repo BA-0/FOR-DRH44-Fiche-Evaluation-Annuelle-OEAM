@@ -39,63 +39,99 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Vérifier l'authentification
+// Vérifier l'authentification et adapter l'affichage selon le rôle
 function checkAuthentication() {
     const token = localStorage.getItem('authToken');
     const role = localStorage.getItem('userRole');
     const userName = localStorage.getItem('userName');
-    
-    // Vérifier si on est en mode visualisation (paramètre URL)
     const urlParams = new URLSearchParams(window.location.search);
     const isViewMode = urlParams.has('id');
-    
     console.log('🔍 Vérification authentification:', { token: !!token, role, userName, isViewMode });
-    
-    // Si on est en mode visualisation, accepter N1 et N2
-    if (isViewMode && token && (role === 'N1' || role === 'N2')) {
-        console.log('✅ Mode visualisation autorisé pour', role);
-        
-        // Afficher le nom de l'utilisateur
-        const userNameElement = document.getElementById('userName');
-        if (userNameElement && userName) {
-            userNameElement.textContent = `👤 ${userName}`;
-            console.log('✅ Nom affiché:', userName);
-        }
-        
-        // En mode N2, masquer les boutons de modification
-        if (role === 'N2') {
-            setTimeout(() => {
-                const btnSave = document.getElementById('btnSave');
-                const btnSubmit = document.getElementById('btnSubmit');
-                if (btnSave) btnSave.style.display = 'none';
-                if (btnSubmit) btnSubmit.style.display = 'none';
-                
-                // Désactiver tous les champs
-                disableFormFields();
-            }, 1000);
-        }
-        
-        return;
-    }
-    
-    // Mode création/édition : seul N1 est autorisé
-    if (!token || role !== 'N1') {
-        console.log('❌ Authentification invalide - Redirection vers login');
-        // Nettoyer la session
-        localStorage.clear();
-        sessionStorage.clear();
-        // Rediriger vers la page de connexion
-        window.location.replace('login.html');
-        return;
-    }
-    
+
     // Afficher le nom de l'utilisateur
     const userNameElement = document.getElementById('userName');
     if (userNameElement && userName) {
         userNameElement.textContent = `👤 ${userName}`;
-        console.log('✅ Nom affiché:', userName);
-    } else {
-        console.error('❌ Élément userName non trouvé ou userName vide');
+    }
+
+    // Adapter l'affichage selon le rôle
+    setTimeout(() => {
+        // Masquer/afficher le badge DRH
+        const drhBadge = document.getElementById('drhBadge');
+        if (drhBadge) drhBadge.style.display = (role === 'DRH') ? '' : 'none';
+
+        // Masquer/afficher les boutons d'action
+        const btnSave = document.getElementById('btnSave');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const btnDownloadPDF = document.getElementById('btnDownloadPDF');
+        const btnAccueil = document.getElementById('btnAccueil');
+        const btnLogout = document.getElementById('btnLogout');
+        if (role === 'DRH' && isViewMode) {
+            // Masquer Accueil et Déconnexion pour DRH en consultation
+            if (btnAccueil) btnAccueil.style.display = 'none';
+            if (btnLogout) btnLogout.style.display = 'none';
+        }
+        if (role === 'N1' && !isViewMode) {
+            if (btnSave) btnSave.style.display = '';
+            if (btnSubmit) btnSubmit.style.display = '';
+            if (btnDownloadPDF) btnDownloadPDF.style.display = '';
+        } else {
+            if (btnSave) btnSave.style.display = 'none';
+            if (btnSubmit) btnSubmit.style.display = 'none';
+        }
+
+        // Désactiver tous les champs pour N2, DRH, N en consultation
+        if ((role === 'N2' || role === 'DRH' || role === 'N') && isViewMode) {
+            disableFormFields();
+        }
+
+        // Signatures :
+        // N peut signer uniquement sa partie si mode édition
+        // N1 peut signer et valider si mode édition
+        // N2/DRH : tout désactivé (consultation)
+        if (role === 'N2' || role === 'DRH') {
+            // Désactiver tous les inputs de signature
+            ['N', 'N1', 'N2'].forEach(r => {
+                const nom = document.getElementById('signatureNom' + r);
+                const date = document.getElementById('signatureDate' + r);
+                const clearBtn = document.querySelector('.signature-clear[onclick*="' + r + '"]');
+                if (nom) nom.disabled = true;
+                if (date) date.disabled = true;
+                if (clearBtn) clearBtn.disabled = true;
+            });
+            // Désactiver les canvas
+            ['N', 'N1', 'N2'].forEach(r => {
+                const canvas = document.getElementById('canvas' + r);
+                if (canvas) canvas.style.pointerEvents = 'none';
+            });
+        }
+        // N : ne peut modifier que ses remarques et signer sa partie
+        if (role === 'N' && isViewMode) {
+            // Désactiver tout sauf remarques N et signature N
+            disableFormFields();
+            // Réactiver remarques N
+            ['reussite1','reussite2','reussite3','difficulte1','difficulte2','difficulte3','souhait1','souhait2','souhait3'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = false;
+            });
+            // Réactiver signature N
+            const nomN = document.getElementById('signatureNomN');
+            const dateN = document.getElementById('signatureDateN');
+            const clearBtnN = document.querySelector('.signature-clear[onclick*="N')"]');
+            if (nomN) nomN.disabled = false;
+            if (dateN) dateN.disabled = false;
+            if (clearBtnN) clearBtnN.disabled = false;
+            const canvasN = document.getElementById('canvasN');
+            if (canvasN) canvasN.style.pointerEvents = '';
+        }
+    }, 500);
+
+    // Authentification stricte :
+    if (!token || (role !== 'N1' && !(isViewMode && (role === 'N2' || role === 'DRH' || role === 'N')))) {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.replace('src/pages/login.html');
+        return;
     }
 }
 
@@ -106,8 +142,23 @@ function logout() {
         localStorage.clear();
         sessionStorage.clear();
         // Rediriger vers login (replace pour empêcher retour)
-        window.location.replace('login.html');
+        window.location.replace('src/pages/login.html');
     }
+}
+
+// Navigation retour
+function navigateBack() {
+    // Si l'utilisateur est DRH, N2 ou N1 en mode visualisation, retour à la liste des évaluations validées ou dashboard
+    const role = localStorage.getItem('userRole');
+    const urlParams = new URLSearchParams(window.location.search);
+    const isViewMode = urlParams.has('id');
+    if ((role === 'DRH' || role === 'N2' || role === 'N1') && isViewMode) {
+        // Rediriger vers le dashboard DRH ou la liste des évaluations validées
+        window.location.href = 'drh-evaluations.html';
+        return;
+    }
+    // Sinon, revenir à la page précédente
+    window.history.back();
 }
 
 // Initialiser les canvas de signature
@@ -526,12 +577,18 @@ async function saveDraft() {
         }
     } catch (error) {
         console.error('❌ Erreur détaillée de sauvegarde:', error);
-        
-        // Message d'erreur plus détaillé
-        const errorMsg = error.message && error.message.includes('Failed to fetch')
-            ? '❌ Impossible de se connecter au serveur. Vérifiez que le serveur est démarré (node server-mysql.js)'
-            : `❌ Erreur lors de la sauvegarde: ${error.message || 'Erreur inconnue'}`;
-        
+        let errorMsg = '';
+        if (error && error.message) {
+            if (error.message.includes('Failed to fetch')) {
+                errorMsg = '❌ Impossible de se connecter au serveur. Vérifiez que le serveur est démarré (node server-mysql.js)';
+            } else if (error.message.includes('timeout')) {
+                errorMsg = '⏱️ La requête a expiré. Vérifiez votre connexion réseau.';
+            } else {
+                errorMsg = `❌ Erreur lors de la sauvegarde: ${error.message}`;
+            }
+        } else {
+            errorMsg = '❌ Erreur inconnue lors de la sauvegarde.';
+        }
         showAlert(errorMsg, 'error');
     } finally {
         showLoading(false);
@@ -568,7 +625,17 @@ async function downloadPDF() {
         }
     } catch (error) {
         console.error('Erreur PDF complète:', error);
-        showAlert('❌ Erreur: ' + error.message, 'error');
+        let errorMsg = '';
+        if (error && error.message) {
+            if (error.message.includes('Failed to fetch')) {
+                errorMsg = '❌ Impossible de générer le PDF : serveur injoignable.';
+            } else {
+                errorMsg = `❌ Erreur PDF : ${error.message}`;
+            }
+        } else {
+            errorMsg = '❌ Erreur inconnue lors de la génération du PDF.';
+        }
+        showAlert(errorMsg, 'error');
     } finally {
         showLoading(false);
     }
@@ -651,7 +718,7 @@ async function submitToN2() {
         const token = localStorage.getItem('authToken');
         if (!token) {
             showAlert('❌ Session expirée. Veuillez vous reconnecter.', 'error');
-            setTimeout(() => window.location.href = 'login.html', 1500);
+            setTimeout(() => window.location.href = 'src/pages/login.html', 1500);
             return;
         }
 
@@ -693,7 +760,17 @@ async function submitToN2() {
         }
     } catch (error) {
         console.error('Erreur complète:', error);
-        showAlert('❌ Erreur de connexion au serveur: ' + error.message, 'error');
+        let errorMsg = '';
+        if (error && error.message) {
+            if (error.message.includes('Failed to fetch')) {
+                errorMsg = '❌ Impossible de se connecter au serveur. Vérifiez que le serveur est démarré (node server-mysql.js)';
+            } else {
+                errorMsg = `❌ Erreur lors de la soumission : ${error.message}`;
+            }
+        } else {
+            errorMsg = '❌ Erreur inconnue lors de la soumission.';
+        }
+        showAlert(errorMsg, 'error');
     } finally {
         showLoading(false);
     }
@@ -747,7 +824,19 @@ async function loadEvaluation(id) {
             formStatus = data.status || 'draft';
             
             // Remplir les champs
-            document.getElementById('direction').value = data.direction || '';
+            // Pour le select, vérifier si la valeur existe dans la liste, sinon mettre ""
+            const directionSelect = document.getElementById('direction');
+            if (directionSelect) {
+                let found = false;
+                for (let i = 0; i < directionSelect.options.length; i++) {
+                    if (directionSelect.options[i].value === data.direction) {
+                        directionSelect.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) directionSelect.selectedIndex = 0;
+            }
             document.getElementById('service').value = data.service || '';
             document.getElementById('evaluateurNom').value = data.evaluateurNom || '';
             document.getElementById('evaluateurFonction').value = data.evaluateurFonction || '';
@@ -889,14 +978,16 @@ async function loadEvaluation(id) {
         }
     } catch (error) {
         console.error('❌ Erreur détaillée:', error);
-        console.error('Message:', error.message);
-        console.error('Stack:', error.stack);
-        
-        // Message d'erreur plus détaillé
-        const errorMsg = error.message.includes('Failed to fetch') 
-            ? '❌ Impossible de se connecter au serveur. Vérifiez que le serveur est démarré (node server-mysql.js)'
-            : `❌ Erreur de chargement: ${error.message}`;
-        
+        let errorMsg = '';
+        if (error && error.message) {
+            if (error.message.includes('Failed to fetch')) {
+                errorMsg = '❌ Impossible de se connecter au serveur. Vérifiez que le serveur est démarré (node server-mysql.js)';
+            } else {
+                errorMsg = `❌ Erreur de chargement : ${error.message}`;
+            }
+        } else {
+            errorMsg = '❌ Erreur inconnue lors du chargement de l\'évaluation.';
+        }
         showAlert(errorMsg, 'error');
     } finally {
         showLoading(false);
@@ -994,7 +1085,17 @@ async function loadValidatedEvaluations() {
             showAlert('❌ Erreur lors du chargement: ' + (result.error || 'Erreur inconnue'), 'error');
         }
     } catch (error) {
-        showAlert('❌ Erreur de connexion au serveur', 'error');
+        let errorMsg = '';
+        if (error && error.message) {
+            if (error.message.includes('Failed to fetch')) {
+                errorMsg = '❌ Impossible de se connecter au serveur pour charger les évaluations.';
+            } else {
+                errorMsg = `❌ Erreur lors du chargement des évaluations : ${error.message}`;
+            }
+        } else {
+            errorMsg = '❌ Erreur inconnue lors du chargement des évaluations.';
+        }
+        showAlert(errorMsg, 'error');
         console.error('Erreur:', error);
     } finally {
         document.getElementById('validatedLoadingContainer').style.display = 'none';

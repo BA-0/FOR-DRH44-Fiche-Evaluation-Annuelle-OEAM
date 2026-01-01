@@ -25,43 +25,41 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('✅ Canvas de signature initialisé');
         
-        // Vérifier si on doit afficher les évaluations validées
-        const showValidated = sessionStorage.getItem('showValidated');
+        // Récupérer l'email de la session
         const userEmail = localStorage.getItem('userEmail');
         console.log('📧 Email utilisateur:', userEmail);
-        console.log('🔍 Mode affichage validées:', showValidated);
         
-        if (showValidated === 'true' && userEmail) {
-            // Mode automatique : charger directement les évaluations validées
-            console.log('🎯 Chargement automatique des évaluations validées...');
-            sessionStorage.removeItem('showValidated'); // Nettoyer le flag
-            
-            // Pré-remplir l'email
+        if (userEmail) {
+            // Pré-remplir l'email automatiquement
             const emailInput = document.getElementById('emailN2Input');
             if (emailInput) {
                 emailInput.value = userEmail;
             }
             
-            // Charger les évaluations validées
-            setTimeout(() => {
-                loadValidatedEvaluations();
-            }, 500);
-        } else {
-            // Mode normal : afficher le modal de demande d'email
-            if (userEmail) {
-                // Pré-remplir l'email mais toujours afficher le modal
-                const emailInput = document.getElementById('emailModalInput');
-                if (emailInput) {
-                    emailInput.value = userEmail;
-                    console.log('✅ Email pré-rempli:', userEmail);
-                } else {
-                    console.error('❌ Element emailModalInput non trouvé');
-                }
-            }
+            // Vérifier si on doit afficher les évaluations validées
+            const showValidated = sessionStorage.getItem('showValidated');
             
-            // Afficher le modal de demande d'email
-            console.log('📋 Affichage du modal d\'email...');
-            showEmailModal();
+            if (showValidated === 'true') {
+                // Charger directement les évaluations validées
+                console.log('🎯 Chargement automatique des évaluations validées...');
+                sessionStorage.removeItem('showValidated');
+                setTimeout(() => {
+                    loadValidatedEvaluations();
+                }, 300);
+            } else {
+                // Charger automatiquement les évaluations en attente
+                console.log('🎯 Chargement automatique des évaluations en attente...');
+                setTimeout(() => {
+                    loadPendingEvaluations();
+                }, 300);
+            }
+        } else {
+            // Pas d'email : afficher une alerte
+            console.error('❌ Aucun email trouvé dans la session');
+            showAlert('❌ Erreur: Aucun email trouvé. Veuillez vous reconnecter.', 'error');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
         }
         
         // Définir la date du jour par défaut
@@ -202,10 +200,20 @@ function checkAuthentication() {
 
 // Déconnexion
 function logout() {
+    console.log('🚪 Déconnexion en cours...');
+    
     // Nettoyer complètement la session
     localStorage.clear();
     sessionStorage.clear();
-    // Redirection vers login (replace pour empêcher retour)
+    
+    // Supprimer tous les cookies
+    document.cookie.split(";").forEach(function(c) { 
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    });
+    
+    console.log('✅ Session nettoyée');
+    
+    // Redirection avec replace (empêche le retour arrière)
     window.location.replace('login.html');
 }
 
@@ -288,6 +296,368 @@ function showAlert(message, type = 'info') {
     }, 5000);
 }
 
+// ==================== NOUVELLES FONCTIONS: ONGLETS, FILTRES ET EXPORT ====================
+
+// État actuel de l'onglet (pending ou validated)
+let currentTab = 'pending';
+let filteredEvaluations = []; // Évaluations après filtrage
+
+// Basculer entre les onglets (En attente / Validées)
+function switchTab(tab) {
+    currentTab = tab;
+    
+    // Mettre à jour les styles des boutons
+    const tabPending = document.getElementById('tabPending');
+    const tabValidated = document.getElementById('tabValidated');
+    
+    if (tab === 'pending') {
+        tabPending.classList.add('active');
+        tabValidated.classList.remove('active');
+        tabPending.style.background = 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)';
+        tabPending.style.color = 'white';
+        tabValidated.style.background = '#ecf0f1';
+        tabValidated.style.color = '#7f8c8d';
+    } else {
+        tabValidated.classList.add('active');
+        tabPending.classList.remove('active');
+        tabValidated.style.background = 'linear-gradient(135deg, #27ae60 0%, #229954 100%)';
+        tabValidated.style.color = 'white';
+        tabPending.style.background = '#ecf0f1';
+        tabPending.style.color = '#7f8c8d';
+    }
+    
+    // Réappliquer les filtres avec le nouvel onglet
+    applyFilters();
+}
+
+// Appliquer les filtres (recherche, direction, score)
+function applyFilters() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const directionFilter = document.getElementById('filterDirection').value;
+    const scoreFilter = document.getElementById('filterScore').value;
+    
+    // Filtrer d'abord par onglet (pending ou validated)
+    let filtered = allEvaluations.filter(eval => {
+        if (currentTab === 'pending') {
+            return eval.status === 'submitted';
+        } else {
+            return eval.status === 'validated';
+        }
+    });
+    
+    // Appliquer le filtre de recherche
+    if (searchText) {
+        filtered = filtered.filter(eval => 
+            (eval.nom && eval.nom.toLowerCase().includes(searchText)) ||
+            (eval.prenom && eval.prenom.toLowerCase().includes(searchText)) ||
+            (eval.matricule && eval.matricule.toLowerCase().includes(searchText))
+        );
+    }
+    
+    // Appliquer le filtre de direction
+    if (directionFilter) {
+        filtered = filtered.filter(eval => eval.direction === directionFilter);
+    }
+    
+    // Appliquer le filtre de score
+    if (scoreFilter) {
+        const [min, max] = scoreFilter.split('-').map(Number);
+        filtered = filtered.filter(eval => {
+            const scorePercent = ((eval.score || 0) / 100) * 100;
+            return scorePercent >= min && scorePercent <= max;
+        });
+    }
+    
+    // Mettre à jour les évaluations affichées
+    evaluations = filtered;
+    filteredEvaluations = filtered;
+    displayEvaluations();
+    
+    // Mettre à jour les compteurs dans les onglets
+    updateTabCounts();
+}
+
+// Mettre à jour les compteurs dans les onglets
+function updateTabCounts() {
+    const pendingCount = allEvaluations.filter(e => e.status === 'submitted').length;
+    const validatedCount = allEvaluations.filter(e => e.status === 'validated').length;
+    
+    document.getElementById('countPending').textContent = pendingCount;
+    document.getElementById('countValidated').textContent = validatedCount;
+}
+
+// Actualiser les données
+function refreshData() {
+    const btn = event.target;
+    btn.style.transform = 'rotate(360deg)';
+    btn.style.transition = 'transform 0.5s';
+    
+    setTimeout(() => {
+        btn.style.transform = 'rotate(0deg)';
+    }, 500);
+    
+    if (currentTab === 'pending') {
+        loadPendingEvaluations();
+    } else {
+        loadValidatedEvaluations();
+    }
+}
+
+// Exporter vers Excel (format CSV)
+function exportToExcel() {
+    if (!evaluations || evaluations.length === 0) {
+        showAlert('⚠️ Aucune évaluation à exporter', 'error');
+        return;
+    }
+    
+    // Déterminer quelles évaluations exporter
+    const dataToExport = filteredEvaluations.length > 0 ? filteredEvaluations : evaluations;
+    
+    // Créer le contenu CSV
+    let csv = '\uFEFF'; // BOM pour UTF-8
+    csv += 'Matricule;Nom;Prénom;Direction;Poste;Score (%);Statut;Date Évaluation;Date Validation;Validateur N1;Validateur N2\n';
+    
+    dataToExport.forEach(eval => {
+        const scorePercent = ((eval.score || 0) / 100) * 100;
+        const status = eval.status === 'submitted' ? 'En attente' : 
+                      eval.status === 'validated' ? 'Validée' : 
+                      eval.status === 'draft' ? 'Brouillon' : eval.status;
+        
+        csv += `"${eval.matricule || ''}";`;
+        csv += `"${eval.nom || ''}";`;
+        csv += `"${eval.prenom || ''}";`;
+        csv += `"${eval.direction || ''}";`;
+        csv += `"${eval.poste || ''}";`;
+        csv += `${scorePercent.toFixed(1)};`;
+        csv += `"${status}";`;
+        csv += `"${formatDate(eval.evaluation_date)}";`;
+        csv += `"${eval.validated_at ? formatDate(eval.validated_at) : ''}";`;
+        csv += `"${eval.validated_by_n1 || ''}";`;
+        csv += `"${eval.validated_by_n2 || ''}"`;
+        csv += '\n';
+    });
+    
+    // Créer le fichier et déclencher le téléchargement
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    const fileName = `evaluations_${currentTab}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.setAttribute('href', url);
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showAlert(`✅ ${dataToExport.length} évaluation(s) exportée(s) vers ${fileName}`, 'success');
+}
+
+// Formater une date
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR');
+}
+
+// ==================== NOUVELLES FONCTIONS: TRI, SÉLECTION, VUE RAPIDE ====================
+
+// Tri des évaluations
+function sortEvaluations() {
+    const sortValue = document.getElementById('sortSelect').value;
+    
+    evaluations.sort((a, b) => {
+        switch(sortValue) {
+            case 'date-desc':
+                return new Date(b.submitted_at || b.submittedAt) - new Date(a.submitted_at || a.submittedAt);
+            case 'date-asc':
+                return new Date(a.submitted_at || a.submittedAt) - new Date(b.submitted_at || b.submittedAt);
+            case 'name-asc':
+                const nameA = (a.evalue_nom || a.evalueNom || '').toLowerCase();
+                const nameB = (b.evalue_nom || b.evalueNom || '').toLowerCase();
+                return nameA.localeCompare(nameB);
+            case 'name-desc':
+                const nameA2 = (a.evalue_nom || a.evalueNom || '').toLowerCase();
+                const nameB2 = (b.evalue_nom || b.evalueNom || '').toLowerCase();
+                return nameB2.localeCompare(nameA2);
+            case 'score-desc':
+                return parseFloat(b.score_final || b.scoreFinal || 0) - parseFloat(a.score_final || a.scoreFinal || 0);
+            case 'score-asc':
+                return parseFloat(a.score_final || a.scoreFinal || 0) - parseFloat(b.score_final || b.scoreFinal || 0);
+            default:
+                return 0;
+        }
+    });
+    
+    displayEvaluations();
+    showAlert(`✅ Évaluations triées`, 'success');
+}
+
+// Mettre à jour le compteur de sélection
+function updateSelectionCount() {
+    const checkboxes = document.querySelectorAll('.eval-checkbox:checked');
+    const count = checkboxes.length;
+    
+    document.getElementById('selectionCount').textContent = `${count} sélectionné(s)`;
+    document.getElementById('batchCount').textContent = count;
+    
+    const batchBtn = document.getElementById('batchValidateBtn');
+    if (count > 0) {
+        batchBtn.disabled = false;
+        batchBtn.style.opacity = '1';
+        batchBtn.style.cursor = 'pointer';
+    } else {
+        batchBtn.disabled = true;
+        batchBtn.style.opacity = '0.5';
+        batchBtn.style.cursor = 'not-allowed';
+    }
+    
+    // Mettre en surbrillance les cartes sélectionnées
+    document.querySelectorAll('.eval-checkbox').forEach(cb => {
+        const card = cb.closest('.evaluation-card');
+        if (cb.checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    });
+    
+    // Mettre à jour la checkbox "Tout sélectionner"
+    const allCheckboxes = document.querySelectorAll('.eval-checkbox');
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    if (selectAllCheckbox && allCheckboxes.length > 0) {
+        selectAllCheckbox.checked = allCheckboxes.length === checkboxes.length;
+    }
+}
+
+// Tout sélectionner / Tout désélectionner
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const checkboxes = document.querySelectorAll('.eval-checkbox');
+    
+    checkboxes.forEach(cb => {
+        cb.checked = selectAllCheckbox.checked;
+    });
+    
+    updateSelectionCount();
+}
+
+// Annuler la sélection
+function clearSelection() {
+    document.querySelectorAll('.eval-checkbox').forEach(cb => {
+        cb.checked = false;
+    });
+    document.getElementById('selectAllCheckbox').checked = false;
+    updateSelectionCount();
+    showAlert('✅ Sélection annulée', 'info');
+}
+
+// Validation par lot
+async function batchValidate() {
+    const checkboxes = document.querySelectorAll('.eval-checkbox:checked');
+    
+    if (checkboxes.length === 0) {
+        showAlert('⚠️ Veuillez sélectionner au moins une évaluation', 'error');
+        return;
+    }
+    
+    const count = checkboxes.length;
+    const confirmMsg = `Voulez-vous vraiment valider ${count} évaluation(s) ?\n\nCette action nécessitera votre signature pour chaque évaluation.`;
+    
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+    
+    // Ouvrir le modal de validation pour la première évaluation sélectionnée
+    const firstEvalId = parseInt(checkboxes[0].dataset.evalId);
+    
+    // Stocker les IDs à valider dans une variable globale
+    window.batchValidationIds = Array.from(checkboxes).map(cb => parseInt(cb.dataset.evalId));
+    window.batchValidationIndex = 0;
+    
+    showAlert(`📝 Validation par lot: 1/${count} évaluations`, 'info');
+    openValidationModal(firstEvalId);
+}
+
+// Vue rapide d'une évaluation (sans modal complet)
+function quickViewEvaluation(evalId) {
+    const evaluation = allEvaluations.find(e => e.id === evalId);
+    if (!evaluation) {
+        showAlert('❌ Évaluation introuvable', 'error');
+        return;
+    }
+    
+    const evalueNom = evaluation.evalue_nom || evaluation.evalueNom || 'N/A';
+    const evaluateurNom = evaluation.evaluateur_nom || evaluation.evaluateurNom || 'N/A';
+    const direction = evaluation.direction || 'N/A';
+    const service = evaluation.service || 'N/A';
+    const scoreFinal = evaluation.score_final || evaluation.scoreFinal || 0;
+    const submittedAt = evaluation.submitted_at || evaluation.submittedAt;
+    
+    // Créer un modal simple
+    const quickViewHTML = `
+        <div class="modal show" id="quickViewModal" style="z-index: 3000;">
+            <div class="modal-content" style="max-width: 700px;">
+                <div class="modal-header">
+                    <h2>👁️ Vue rapide - ${evalueNom}</h2>
+                </div>
+                <div class="modal-body">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #7f8c8d; font-size: 13px; margin-bottom: 5px;">👤 Évalué</div>
+                            <div style="font-weight: 600; font-size: 16px;">${evalueNom}</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #7f8c8d; font-size: 13px; margin-bottom: 5px;">👨‍💼 Évaluateur (N+1)</div>
+                            <div style="font-weight: 600; font-size: 16px;">${evaluateurNom}</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #7f8c8d; font-size: 13px; margin-bottom: 5px;">🏢 Direction</div>
+                            <div style="font-weight: 600; font-size: 16px;">${direction}</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                            <div style="color: #7f8c8d; font-size: 13px; margin-bottom: 5px;">📅 Soumis le</div>
+                            <div style="font-weight: 600; font-size: 16px;">${submittedAt ? new Date(submittedAt).toLocaleDateString('fr-FR') : 'N/A'}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; text-align: center;">
+                        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 10px;">Score Final</div>
+                        <div style="font-size: 48px; font-weight: 700;">${parseFloat(scoreFinal).toFixed(1)}%</div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #f39c12; border-radius: 5px;">
+                        <strong>💡 Info:</strong> Pour voir tous les détails, cliquez sur "Détail complet"
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="closeQuickView()" style="padding: 12px 25px; background: #e0e0e0; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        Fermer
+                    </button>
+                    <button onclick="closeQuickView(); viewFullEvaluation(${evalId})" style="padding: 12px 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        📄 Détail complet
+                    </button>
+                    ${evaluation.status === 'submitted' ? `
+                        <button onclick="closeQuickView(); openValidationModal(${evalId})" style="padding: 12px 25px; background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            ✅ Valider
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', quickViewHTML);
+}
+
+// Fermer la vue rapide
+function closeQuickView() {
+    const modal = document.getElementById('quickViewModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
 // Charger les évaluations en attente
 async function loadPendingEvaluations() {
     const email = document.getElementById('emailN2Input').value.trim();
@@ -336,17 +706,34 @@ async function loadPendingEvaluations() {
         if (result.success) {
             // Stocker TOUTES les évaluations
             allEvaluations = result.evaluations;
-            evaluations = result.evaluations;
+            evaluations = result.evaluations.filter(e => e.status === 'submitted'); // Ne montrer que les "en attente" au départ
+            currentTab = 'pending';
+            
             displayEvaluations();
             updateStats();
             document.getElementById('statsContainer').style.display = 'grid';
             
-            if (evaluations.length === 0) {
+            // Afficher la barre d'outils
+            document.getElementById('toolbarContainer').style.display = 'block';
+            
+            // Remplir les options de direction (filtre)
+            populateDirectionFilter();
+            
+            // Initialiser l'écouteur de recherche
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', applyFilters);
+            }
+            
+            // Mettre à jour les compteurs des onglets
+            updateTabCounts();
+            
+            if (allEvaluations.length === 0) {
                 showAlert('ℹ️ Aucune évaluation trouvée pour cet email', 'info');
             } else {
-                const pending = evaluations.filter(e => e.status === 'submitted').length;
-                const validated = evaluations.filter(e => e.status === 'validated').length;
-                showAlert(`✅ ${evaluations.length} évaluation(s) chargée(s) (${pending} en attente, ${validated} validée(s))`, 'success');
+                const pending = allEvaluations.filter(e => e.status === 'submitted').length;
+                const validated = allEvaluations.filter(e => e.status === 'validated').length;
+                showAlert(`✅ ${allEvaluations.length} évaluation(s) chargée(s) (${pending} en attente, ${validated} validée(s))`, 'success');
             }
         } else {
             const errorMsg = result.error || 'Erreur inconnue';
@@ -359,6 +746,23 @@ async function loadPendingEvaluations() {
     } finally {
         document.getElementById('loadingContainer').style.display = 'none';
     }
+}
+
+// Remplir le filtre des directions avec les valeurs uniques
+function populateDirectionFilter() {
+    const directionFilter = document.getElementById('filterDirection');
+    const directions = [...new Set(allEvaluations.map(e => e.direction).filter(d => d))];
+    
+    // Garder l'option "Toutes les directions"
+    directionFilter.innerHTML = '<option value="">🏢 Toutes les directions</option>';
+    
+    // Ajouter chaque direction unique
+    directions.sort().forEach(direction => {
+        const option = document.createElement('option');
+        option.value = direction;
+        option.textContent = direction;
+        directionFilter.appendChild(option);
+    });
 }
 
 // Charger uniquement les évaluations validées (pour le bouton N+2)
@@ -396,9 +800,21 @@ async function loadValidatedEvaluations() {
             allEvaluations = result.evaluations;
             // Filtrer pour ne garder que les évaluations validées à l'affichage
             evaluations = result.evaluations.filter(e => e.status === 'validated');
+            currentTab = 'validated';
+            
             displayEvaluations();
             updateStats();
             document.getElementById('statsContainer').style.display = 'grid';
+            
+            // Afficher la barre d'outils
+            document.getElementById('toolbarContainer').style.display = 'block';
+            
+            // Remplir les options de direction (filtre)
+            populateDirectionFilter();
+            
+            // Mettre à jour les onglets (activer l'onglet "Validées")
+            switchTab('validated');
+            updateTabCounts();
             
             if (evaluations.length === 0) {
                 showAlert('ℹ️ Aucune évaluation validée trouvée', 'info');
@@ -424,12 +840,18 @@ async function loadValidatedEvaluations() {
 function displayEvaluations() {
     const container = document.getElementById('evaluationsContainer');
     
+    // Afficher/masquer la barre de validation par lot
+    const batchBar = document.getElementById('batchActionsBar');
+    if (batchBar) {
+        batchBar.style.display = currentTab === 'pending' && evaluations.length > 0 ? 'block' : 'none';
+    }
+    
     if (evaluations.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
-                <h2>Aucune évaluation en attente</h2>
-                <p>Vous n'avez pas d'évaluation à valider pour le moment.</p>
+                <h2>Aucune évaluation ${currentTab === 'pending' ? 'en attente' : 'validée'}</h2>
+                <p>Vous n'avez pas d'évaluation ${currentTab === 'pending' ? 'à valider' : 'validée'} pour le moment.</p>
             </div>
         `;
         return;
@@ -437,23 +859,37 @@ function displayEvaluations() {
     
     container.innerHTML = evaluations.map(evaluation => {
         const isValidated = evaluation.status === 'validated';
+        const isPending = evaluation.status === 'submitted';
         
         // Gérer les deux formats (snake_case de l'API et camelCase)
         const evalueNom = evaluation.evalue_nom || evaluation.evalueNom || 'N/A';
         const evaluateurNom = evaluation.evaluateur_nom || evaluation.evaluateurNom || 'N/A';
         const evaluateurFonction = evaluation.evaluateur_fonction || evaluation.evaluateurFonction || 'N/A';
-        const evalueFonction = evaluation.evalue_fonction || evaluation.evalueFonction || 'N/A';
         const direction = evaluation.direction || 'N/A';
         const service = evaluation.service || 'N/A';
         const submittedAt = evaluation.submitted_at || evaluation.submittedAt;
-        const scoreFinal = evaluation.score_final || evaluation.scoreFinal || '0';
+        const scoreFinal = evaluation.score_final || evaluation.scoreFinal || 0;
+        const scorePercent = parseFloat(scoreFinal);
+        
+        // Badge de score coloré
+        let scoreBadgeClass = 'score-low';
+        if (scorePercent >= 70) scoreBadgeClass = 'score-excellent';
+        else if (scorePercent >= 50) scoreBadgeClass = 'score-good';
         
         return `
-            <div class="evaluation-card ${isValidated ? 'validated' : ''}" style="cursor: pointer;">
-                <div class="eval-header">
-                    <div class="eval-title">📋 Évaluation de ${evalueNom}</div>
-                    <div class="eval-status ${isValidated ? 'status-validated' : 'status-pending'}">
-                        ${isValidated ? '✅ Validée' : '⏳ En attente'}
+            <div class="evaluation-card ${isValidated ? 'validated' : ''}" id="eval-card-${evaluation.id}" style="cursor: pointer;">
+                <div class="eval-header" style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                        ${isPending ? `
+                            <input type="checkbox" class="eval-checkbox" data-eval-id="${evaluation.id}" onclick="event.stopPropagation(); updateSelectionCount()">
+                        ` : ''}
+                        <div class="eval-title">📋 ${evalueNom}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="score-badge ${scoreBadgeClass}">${scorePercent.toFixed(1)}%</span>
+                        <div class="eval-status ${isValidated ? 'status-validated' : 'status-pending'}">
+                            ${isValidated ? '✅ Validée' : '⏳ En attente'}
+                        </div>
                     </div>
                 </div>
                 
@@ -480,27 +916,23 @@ function displayEvaluations() {
                     </div>
                 </div>
                 
-                <div class="eval-scores">
-                    <div class="score-box score-final">
-                        <div class="score-box-label">Score Final</div>
-                        <div class="score-box-value">${scoreFinal}%</div>
-                    </div>
-                </div>
-                
-                <div class="eval-actions">
+                <div class="eval-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="quick-view-btn" onclick="event.stopPropagation(); quickViewEvaluation(${evaluation.id})">
+                        👁️ Vue rapide
+                    </button>
                     <button class="btn btn-view" onclick="event.stopPropagation(); viewFullEvaluation(${evaluation.id})">
-                        👁️ Voir le détail complet
+                        📄 Détail complet
                     </button>
                     ${!isValidated ? `
                         <button class="btn btn-validate" onclick="event.stopPropagation(); openValidationModal(${evaluation.id})">
-                            ✅ Valider cette évaluation
+                            ✅ Valider
                         </button>
                     ` : `
                         <button class="btn btn-download" onclick="event.stopPropagation(); downloadPDF(${evaluation.id})">
-                            📥 Télécharger le PDF
+                            📥 PDF
                         </button>
                         <button class="btn" onclick="event.stopPropagation(); viewValidatedDetails(${evaluation.id})" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white;">
-                            📋 Voir les signatures
+                            📋 Signatures
                         </button>
                     `}
                 </div>
@@ -766,8 +1198,43 @@ async function confirmValidation() {
             showAlert('✅ Évaluation validée avec succès !', 'success');
             closeModal();
             
-            // Recharger les évaluations
-            await loadPendingEvaluations();
+            // Vérifier si on est en mode validation par lot
+            if (window.batchValidationIds && window.batchValidationIndex !== undefined) {
+                window.batchValidationIndex++;
+                
+                if (window.batchValidationIndex < window.batchValidationIds.length) {
+                    // Passer à l'évaluation suivante
+                    const nextEvalId = window.batchValidationIds[window.batchValidationIndex];
+                    const totalCount = window.batchValidationIds.length;
+                    const currentCount = window.batchValidationIndex + 1;
+                    
+                    showAlert(`📝 Validation par lot: ${currentCount}/${totalCount} évaluations`, 'info');
+                    
+                    // Réinitialiser le canvas pour la prochaine signature
+                    clearModalSignature();
+                    
+                    // Ouvrir le modal pour l'évaluation suivante
+                    setTimeout(() => {
+                        openValidationModal(nextEvalId);
+                    }, 500);
+                } else {
+                    // Toutes les évaluations ont été validées
+                    showAlert(`✅ Validation par lot terminée ! ${totalCount} évaluation(s) validée(s)`, 'success');
+                    
+                    // Nettoyer les variables de batch
+                    delete window.batchValidationIds;
+                    delete window.batchValidationIndex;
+                    
+                    // Décocher toutes les cases
+                    clearSelection();
+                    
+                    // Recharger les évaluations
+                    await loadPendingEvaluations();
+                }
+            } else {
+                // Validation simple (pas de batch)
+                await loadPendingEvaluations();
+            }
         } else {
             showAlert('❌ Erreur lors de la validation: ' + result.error, 'error');
         }
@@ -928,3 +1395,18 @@ window.logout = logout;
 window.loadPendingEvaluations = loadPendingEvaluations;
 window.loadValidatedEvaluations = loadValidatedEvaluations;
 window.submitEmailModal = submitEmailModal;
+window.switchTab = switchTab;
+window.applyFilters = applyFilters;
+window.sortEvaluations = sortEvaluations;
+window.exportToExcel = exportToExcel;
+window.refreshData = refreshData;
+window.toggleSelectAll = toggleSelectAll;
+window.updateSelectionCount = updateSelectionCount;
+window.clearSelection = clearSelection;
+window.batchValidate = batchValidate;
+window.quickViewEvaluation = quickViewEvaluation;
+window.closeQuickView = closeQuickView;
+window.openValidationModal = openValidationModal;
+window.closeModal = closeModal;
+window.confirmValidation = confirmValidation;
+window.clearModalSignature = clearModalSignature;

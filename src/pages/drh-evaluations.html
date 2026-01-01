@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Évaluations - DRH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/senico-theme.css">
+    <link rel="stylesheet" href="../styles/drh-evaluations.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="../scripts/utils/pdf-generator.js"></script>
+    <script src="../scripts/pages/drh-logout.js"></script>
+    <script src="https://kit.fontawesome.com/2b8e8e1e2b.js" crossorigin="anonymous"></script>
+</head>
+<body style="background: var(--senico-light-grey);">
+    <header style="background: var(--senico-gradient-main); box-shadow: var(--senico-shadow-sm); padding: 0;">
+        <nav class="senico-nav" style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 18px;min-height:64px;">
+            <div style="display:flex;align-items:center;gap:18px;">
+                <img src="../assets/images/logo-senico.jpg" alt="Logo SENICO" style="height:44px;width:auto;display:inline-block;vertical-align:middle;">
+                <span style="color:#fff;font-size:1.2rem;font-weight:600;letter-spacing:1.2px;opacity:0.85;">Espace DRH</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <button onclick="logout()" class="btn" id="btnLogout" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; padding: 8px 22px; border: none; border-radius: 25px; cursor: pointer; font-size: 15px; font-weight: 600;">🚪 Déconnexion</button>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="drh-tabs-container">
+            <nav class="drh-tabs">
+                <button class="drh-tab active" data-tab="dashboard"><i class="fas fa-chart-bar"></i> Tableau de bord</button>
+                <button class="drh-tab" data-tab="notifications"><i class="fas fa-bell"></i> Notifications</button>
+                <button class="drh-tab" data-tab="evaluations"><i class="fas fa-tasks"></i> Gestion des évaluations</button>
+                <button class="drh-tab" data-tab="campagnes"><i class="fas fa-calendar-alt"></i> Campagnes d'évaluation</button>
+                        <section id="tab-campagnes" class="drh-tab-content" style="display:none;">
+                            <div class="drh-evaluations-container" style="max-width:900px;margin:0 auto;">
+                                <h1 style="display:flex;align-items:center;gap:14px;font-size:2rem;margin-bottom:18px;">
+                                    <i class="fas fa-calendar-alt" style="color:var(--senico-main);"></i>
+                                    Gestion des campagnes <span class="drh-badge">DRH</span>
+                                </h1>
+                                <div id="campagne-active" style="margin-bottom:24px;"></div>
+                                <form id="campagneForm" style="display:flex;flex-wrap:wrap;gap:18px;align-items:end;background:#f8f9fa;padding:18px 20px 12px 20px;border-radius:10px;box-shadow:0 2px 8px #0001;margin-bottom:24px;">
+                                    <div style="flex:1;min-width:220px;">
+                                        <label for="campagneNom" style="font-weight:600;">Nom de la campagne</label>
+                                        <input type="text" id="campagneNom" placeholder="Ex: Campagne annuelle 2026" style="width:100%;padding:8px 10px;margin-top:4px;">
+                                    </div>
+                                    <div style="min-width:160px;">
+                                        <label for="campagneDebut" style="font-weight:600;">Début</label>
+                                        <input type="date" id="campagneDebut" style="width:100%;padding:8px 10px;margin-top:4px;">
+                                    </div>
+                                    <div style="min-width:160px;">
+                                        <label for="campagneFin" style="font-weight:600;">Fin</label>
+                                        <input type="date" id="campagneFin" style="width:100%;padding:8px 10px;margin-top:4px;">
+                                    </div>
+                                    <div style="display:flex;flex-direction:column;gap:8px;min-width:180px;">
+                                        <button id="btnDemarrerCampagne" class="senico-btn" style="margin-top:22px;"><i class="fas fa-play"></i> Démarrer une campagne</button>
+                                        <button id="btnCloreCampagne" class="senico-btn senico-btn-danger" style="margin-top:0;"><i class="fas fa-stop"></i> Clôturer la campagne</button>
+                                    </div>
+                                </form>
+                                <h2 style="margin-top:32px;font-size:1.3rem;">Historique des campagnes</h2>
+                                <div style="overflow-x:auto;">
+                                    <table id="campagnesTable" style="width:100%;margin-top:12px;background:#fff;border-radius:8px;box-shadow:0 1px 4px #0001;">
+                                        <thead style="background:var(--senico-main);color:#fff;">
+                                            <tr>
+                                                <th style="padding:8px 6px;">Nom</th>
+                                                <th>Début</th>
+                                                <th>Fin</th>
+                                                <th>Statut</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="campagnesTableBody">
+                                            <!-- Lignes dynamiques -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+            </nav>
+            <section id="tab-dashboard" class="drh-tab-content" style="display:block;">
+                <div class="drh-evaluations-container" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px #0001; padding: 36px 32px 32px 32px; max-width: 1100px; margin: 0 auto;">
+                    <h1 style="display:flex;align-items:center;gap:16px;font-size:2.1rem;margin-bottom:18px;letter-spacing:1px;">
+                        <i class="fas fa-chart-bar" style="color:var(--senico-main);font-size:2.2rem;"></i>
+                        Tableau de bord <span class="drh-badge" style="font-size:1.1rem;">DRH</span>
+                    </h1>
+                    <div style="display:flex;gap:24px;align-items:center;margin-bottom:28px;flex-wrap:wrap;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <label for="dashboardDirection" style="font-weight:600;font-size:1.08rem;">Direction :</label>
+                            <select id="dashboardDirection" style="min-width:180px;font-size:1.08rem;padding:8px 14px;border-radius:8px;border:1.5px solid #b2dfdb;"></select>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <label for="dashboardService" style="font-weight:600;font-size:1.08rem;">Service :</label>
+                            <select id="dashboardService" style="min-width:180px;font-size:1.08rem;padding:8px 14px;border-radius:8px;border:1.5px solid #b2dfdb;"></select>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;margin-top:24px;">
+                        <div class="drh-dashboard-card" style="background:linear-gradient(135deg,#e3fcec 0%,#b2f7cc 100%);box-shadow:0 2px 12px #4A9D5F22;">
+                            <span class="drh-dashboard-icon" style="background:#4A9D5F;color:#fff;"><i class="fas fa-users"></i></span>
+                            <div class="drh-dashboard-title" style="color:#388e3c;">Évaluations totales</div>
+                            <div class="drh-dashboard-value" id="stat-total" style="font-size:2.2rem;">-</div>
+                        </div>
+                        <div class="drh-dashboard-card" style="background:linear-gradient(135deg,#e3fcec 0%,#d4fcf9 100%);box-shadow:0 2px 12px #43a04722;">
+                            <span class="drh-dashboard-icon" style="background:#43a047;color:#fff;"><i class="fas fa-check-circle"></i></span>
+                            <div class="drh-dashboard-title" style="color:#229954;">Validées</div>
+                            <div class="drh-dashboard-value" id="stat-validated" style="font-size:2.2rem;">-</div>
+                        </div>
+                        <div class="drh-dashboard-card" style="background:linear-gradient(135deg,#fffbe6 0%,#ffe082 100%);box-shadow:0 2px 12px #fbc02d22;">
+                            <span class="drh-dashboard-icon" style="background:#fbc02d;color:#fff;"><i class="fas fa-hourglass-half"></i></span>
+                            <div class="drh-dashboard-title" style="color:#b8860b;">En attente</div>
+                            <div class="drh-dashboard-value" id="stat-submitted" style="font-size:2.2rem;">-</div>
+                        </div>
+                        <div class="drh-dashboard-card" style="background:linear-gradient(135deg,#fbeee6 0%,#ffd6cc 100%);box-shadow:0 2px 12px #e74c3c22;">
+                            <span class="drh-dashboard-icon" style="background:#e74c3c;color:#fff;"><i class="fas fa-edit"></i></span>
+                            <div class="drh-dashboard-title" style="color:#e74c3c;">Brouillons</div>
+                            <div class="drh-dashboard-value" id="stat-draft" style="font-size:2.2rem;">-</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="tab-notifications" class="drh-tab-content" style="display:none;">
+                <div class="drh-evaluations-container">
+                    <h1 style="display:flex;align-items:center;gap:12px;">Notifications <span class="drh-badge">DRH</span></h1>
+                    <ul class="drh-notifications-list" id="drh-notifications-list">
+                        <li class="drh-notification-info">Aucune notification pour le moment.</li>
+                    </ul>
+                </div>
+            </section>
+            <section id="tab-evaluations" class="drh-tab-content" style="display:none;">
+                <div class="drh-evaluations-container">
+                    <div class="drh-eval-header">
+                        <h1 style="font-size:2rem;display:flex;align-items:center;gap:10px;margin-bottom:0;">
+                            <i class="fas fa-users-cog" style="color:var(--senico-main);"></i> Gestion des Évaluations <span class="drh-badge">DRH</span>
+                        </h1>
+                        <hr style="margin:10px 0 22px 0; border:none; border-top:1.5px solid #e0e0e0;">
+                    </div>
+                    <div class="drh-filters" style="background:#fff;box-shadow:0 2px 8px #0001;">
+                        <div class="filters-row" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;width:100%;">
+                            <input type="text" id="searchInput" placeholder="Recherche nom, direction, service..." style="flex:1;min-width:220px;">
+                            <select id="statusFilter" style="min-width:150px;">
+                                <option value="">Tous statuts</option>
+                                <option value="draft">Brouillon</option>
+                                <option value="submitted">En attente</option>
+                                <option value="validated">Validée</option>
+                            </select>
+                            <select id="filterDirection" style="min-width:170px;"></select>
+                            <select id="filterService" style="min-width:170px;"></select>
+                            <select id="filterYear" style="min-width:130px;"></select>
+                            <div class="export-btns" style="margin-left:auto;display:flex;gap:8px;">
+                                <button id="exportBtn" class="btn-export-excel"><i class="fas fa-file-excel"></i> Export Excel</button>
+                                <button id="exportPdfBtn" class="btn-export-pdf"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="evaluationsTableContainer" style="margin-top:18px;">
+                        <table id="evaluationsTable" class="drh-eval-table">
+                            <thead>
+                                <tr>
+                                    <th>Évalué</th>
+                                    <th>Évaluateur</th>
+                                    <th>Matricule</th>
+                                    <th>Direction</th>
+                                    <th>Service</th>
+                                    <th>Statut</th>
+                                    <th>Date création</th>
+                                    <th>Score final</th>
+                                    <th>Retard</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="evaluationsTableBody">
+                                <!-- Lignes dynamiques -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="noResults" style="display:none; text-align:center; color:#888; margin:40px 0;">Aucun résultat</div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer style="margin-top:40px;text-align:center;color:#aaa;font-size:14px;padding-bottom:18px;">
+        &copy; 2026 SENICO SA - Direction des Ressources Humaines
+    </footer>
+    <script src="../scripts/pages/drh-evaluations.js"></script>
+    <script>
+    // Gestion des onglets DRH avec animation
+    document.querySelectorAll('.drh-tab').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.drh-tab').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.drh-tab-content').forEach(sec => {
+                sec.style.display = 'none';
+                sec.classList.remove('tab-anim');
+            });
+            const tab = document.getElementById('tab-' + this.dataset.tab);
+            tab.style.display = 'block';
+            setTimeout(() => tab.classList.add('tab-anim'), 10);
+        });
+    });
+    </script>
+</body>
+</html>

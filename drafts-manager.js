@@ -9,7 +9,7 @@ const userRole = localStorage.getItem('userRole');
 
 if (!userEmail || !userRole) {
     showAlert('Veuillez vous connecter pour accéder à cette page', 'error');
-    setTimeout(() => window.location.href = 'login.html', 2000);
+    setTimeout(() => window.location.href = 'src/pages/login.html', 2000);
 }
 
 // Load drafts on page load

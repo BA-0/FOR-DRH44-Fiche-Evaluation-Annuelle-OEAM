@@ -44,6 +44,7 @@ async function requireAuth(req, res, next) {
         // Récupérer les informations de l'utilisateur depuis la base de données
         const sql = 'SELECT id, username, email, name, role FROM users WHERE id = ? AND username = ? AND is_active = TRUE';
         const users = await db.query(sql, [userId, username]);
+        // Vérification du rôle DRH possible ici si besoin de restreindre l'accès à certaines routes
         
         if (users.length === 0) {
             return res.status(401).json({ 
@@ -73,19 +74,19 @@ async function requireAuth(req, res, next) {
 // Route de connexion avec MySQL et bcrypt
 app.post('/api/auth/login', async (req, res) => {
     try {
-        const { username, password, role } = req.body;
+        const { username, password } = req.body;
         
-        console.log('🔐 Tentative de connexion:', { username, role });
+        console.log('🔐 Tentative de connexion:', { username });
         
-        // Chercher l'utilisateur dans la base de données
-        const sql = 'SELECT * FROM users WHERE username = ? AND role = ? AND is_active = TRUE';
-        const users = await db.query(sql, [username, role]);
+        // Chercher l'utilisateur dans la base de données (sans filtrer par rôle)
+        const sql = 'SELECT * FROM users WHERE username = ? AND is_active = TRUE';
+        const users = await db.query(sql, [username]);
         
         if (users.length === 0) {
             console.log('❌ Utilisateur non trouvé');
             return res.status(401).json({ 
                 error: 'Identifiants incorrects',
-                message: 'Nom d\'utilisateur ou rôle incorrect' 
+                message: 'Nom d\'utilisateur incorrect' 
             });
         }
         
@@ -228,10 +229,30 @@ app.get('/api/evaluations', async (req, res) => {
     try {
         const sql = 'SELECT * FROM evaluations ORDER BY created_at DESC';
         const evaluations = await db.query(sql);
+        res.json({ success: true, evaluations });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des évaluations:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// GET - Toutes les évaluations (Admin) - DOIT ÊTRE AVANT /:id
+app.get('/api/evaluations/all', requireAdmin, async (req, res) => {
+    try {
+        const sql = `
+            SELECT id, date_evaluation, direction, service, 
+                   evaluateur_nom, evaluateur_matricule, evaluateur_fonction, 
+                   evalue_nom, evalue_fonction, 
+                   categorie, annee, email_n2, status, 
+                   created_at, submitted_at, validated_at
+            FROM evaluations 
+            ORDER BY created_at DESC
+        `;
+        const evaluations = await db.query(sql);
         res.json(evaluations);
     } catch (error) {
         console.error('Erreur lors de la récupération des évaluations:', error);
-        res.status(500).json({ error: 'Erreur serveur' });
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
     }
 });
 
@@ -512,11 +533,11 @@ app.post('/api/evaluations', async (req, res) => {
         
         const sql = `
             INSERT INTO evaluations (
-                date_evaluation, direction, service, evaluateur_nom, evaluateur_fonction,
+                date_evaluation, direction, service, evaluateur_nom, evaluateur_matricule, evaluateur_fonction,
                 evalue_nom, evalue_fonction, categorie, annee, email_n2,
                 objectifs, competences, scores, observations, signatures,
                 status, created_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         
         const params = [
@@ -524,6 +545,7 @@ app.post('/api/evaluations', async (req, res) => {
             evaluation.direction || '',
             evaluation.service || '',
             evaluation.evaluateurNom || '',
+            evaluation.evaluateurMatricule || '',
             evaluation.evaluateurFonction || '',
             evaluation.evalueNom || '',
             evaluation.evalueFonction || '',
@@ -566,6 +588,7 @@ app.put('/api/evaluations/:id', async (req, res) => {
                 direction = ?,
                 service = ?,
                 evaluateur_nom = ?,
+                evaluateur_matricule = ?,
                 evaluateur_fonction = ?,
                 evalue_nom = ?,
                 evalue_fonction = ?,
@@ -695,6 +718,443 @@ app.delete('/api/evaluations/:id', async (req, res) => {
     } catch (error) {
         console.error('Erreur lors de la suppression:', error);
         res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// ===========================================
+// ROUTES ADMIN - Gestion des utilisateurs
+// ===========================================
+
+// Middleware pour vérifier si l'utilisateur est admin
+async function requireAdmin(req, res, next) {
+    try {
+        // D'abord, vérifier l'authentification
+        const authHeader = req.headers.authorization;
+        
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Non authentifié' 
+            });
+        }
+        
+        const token = authHeader.substring(7);
+        const decoded = Buffer.from(token, 'base64').toString('utf-8');
+        const [userId, username] = decoded.split(':');
+        
+        // Vérifier que l'utilisateur est admin
+        const sql = 'SELECT role FROM users WHERE id = ? AND username = ? AND is_active = TRUE';
+        const users = await db.query(sql, [userId, username]);
+        
+        if (users.length === 0 || users[0].role !== 'admin') {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Accès refusé. Privilèges administrateur requis.' 
+            });
+        }
+        
+        req.adminUser = { id: userId, username };
+        next();
+    } catch (error) {
+        console.error('Erreur middleware admin:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+}
+
+// GET - Liste de tous les utilisateurs (Admin)
+app.get('/api/users', requireAdmin, async (req, res) => {
+    try {
+        const sql = `
+            SELECT id, username, name, email, role, is_active, 
+                   created_at, updated_at, first_login
+            FROM users 
+            ORDER BY created_at DESC
+        `;
+        const users = await db.query(sql);
+        res.json(users);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des utilisateurs:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// POST - Créer un nouvel utilisateur (Admin)
+app.post('/api/users', requireAdmin, async (req, res) => {
+    try {
+        const { username, password, name, email, role, is_active } = req.body;
+        
+        // Validation
+        if (!username || !password || !name || !email || !role) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Tous les champs obligatoires doivent être remplis' 
+            });
+        }
+        
+        // Vérifier si le username existe déjà
+        const checkSql = 'SELECT id FROM users WHERE username = ?';
+        const existing = await db.query(checkSql, [username]);
+        
+        if (existing.length > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Ce nom d\'utilisateur existe déjà' 
+            });
+        }
+        
+        // Hasher le mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        // Insérer le nouvel utilisateur
+        const insertSql = `
+            INSERT INTO users (username, password, name, email, role, is_active, first_login)
+            VALUES (?, ?, ?, ?, ?, ?, TRUE)
+        `;
+        
+        const result = await db.query(insertSql, [
+            username, 
+            hashedPassword, 
+            name, 
+            email, 
+            role, 
+            is_active !== undefined ? is_active : 1
+        ]);
+        
+        console.log(`✅ Utilisateur créé: ${username} (${role})`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Utilisateur créé avec succès',
+            userId: result.insertId 
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de la création de l\'utilisateur:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// PUT - Modifier un utilisateur (Admin)
+app.put('/api/users/:id', requireAdmin, async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { username, password, name, email, role, is_active } = req.body;
+        
+        // Validation
+        if (!username || !name || !email || !role) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Tous les champs obligatoires doivent être remplis' 
+            });
+        }
+        
+        // Vérifier si l'utilisateur existe
+        const checkSql = 'SELECT id FROM users WHERE id = ?';
+        const existing = await db.query(checkSql, [userId]);
+        
+        if (existing.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Utilisateur non trouvé' 
+            });
+        }
+        
+        // Construire la requête de mise à jour
+        let updateSql = `
+            UPDATE users 
+            SET username = ?, name = ?, email = ?, role = ?, is_active = ?
+        `;
+        let params = [username, name, email, role, is_active !== undefined ? is_active : 1];
+        
+        // Si un nouveau mot de passe est fourni
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updateSql += ', password = ?';
+            params.push(hashedPassword);
+        }
+        
+        updateSql += ' WHERE id = ?';
+        params.push(userId);
+        
+        await db.query(updateSql, params);
+        
+        console.log(`✅ Utilisateur modifié: ${username}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Utilisateur modifié avec succès' 
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de la modification de l\'utilisateur:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// Route pour réinitialiser le mot de passe d'un utilisateur (Admin uniquement)
+app.post('/api/users/:id/reset-password', requireAdmin, async (req, res) => {
+    try {
+        const userId = req.params.id;
+        
+        console.log(`🔑 Réinitialisation du mot de passe pour l'utilisateur ID: ${userId}`);
+        
+        // Vérifier que l'utilisateur existe
+        const users = await db.query('SELECT username FROM users WHERE id = ?', [userId]);
+        
+        if (!users || users.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Utilisateur introuvable' 
+            });
+        }
+        
+        const username = users[0].username;
+        
+        // Nouveau mot de passe par défaut
+        const defaultPassword = 'Test123@';
+        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+        
+        // Réinitialiser le mot de passe et activer first_login
+        await db.query(
+            'UPDATE users SET password = ?, first_login = 1 WHERE id = ?',
+            [hashedPassword, userId]
+        );
+        
+        console.log(`✅ Mot de passe réinitialisé pour: ${username}`);
+        console.log(`🔐 Nouveau mot de passe: ${defaultPassword}`);
+        console.log(`⚠️ First login activé - L'utilisateur devra changer son mot de passe`);
+        
+        res.json({ 
+            success: true, 
+            message: `Mot de passe réinitialisé pour ${username}`,
+            defaultPassword: defaultPassword,
+            info: 'L\'utilisateur devra changer son mot de passe à la prochaine connexion'
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de la réinitialisation du mot de passe:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+// PATCH - Modifier le statut d'un utilisateur (Admin)
+app.patch('/api/users/:id/status', requireAdmin, async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { is_active } = req.body;
+        
+        if (is_active === undefined) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Le statut est requis' 
+            });
+        }
+        
+        const sql = 'UPDATE users SET is_active = ? WHERE id = ?';
+        await db.query(sql, [is_active, userId]);
+        
+        console.log(`✅ Statut utilisateur modifié: ID ${userId} => ${is_active ? 'Actif' : 'Inactif'}`);
+        
+        res.json({ 
+            success: true, 
+            message: `Utilisateur ${is_active ? 'activé' : 'désactivé'} avec succès` 
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de la modification du statut:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// DELETE - Supprimer un utilisateur (Admin)
+app.delete('/api/users/:id', requireAdmin, async (req, res) => {
+    try {
+        const userId = req.params.id;
+        
+        // Vérifier si c'est le dernier admin
+        const checkAdminSql = 'SELECT COUNT(*) as count FROM users WHERE role = "admin" AND is_active = TRUE';
+        const adminCount = await db.query(checkAdminSql);
+        
+        const userSql = 'SELECT role FROM users WHERE id = ?';
+        const user = await db.query(userSql, [userId]);
+        
+        if (user.length > 0 && user[0].role === 'admin' && adminCount[0].count <= 1) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Impossible de supprimer le dernier administrateur' 
+            });
+        }
+        
+        // Supprimer l'utilisateur (les évaluations seront mises à NULL grâce à ON DELETE SET NULL)
+        const deleteSql = 'DELETE FROM users WHERE id = ?';
+        await db.query(deleteSql, [userId]);
+        
+        console.log(`✅ Utilisateur supprimé: ID ${userId}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Utilisateur supprimé avec succès' 
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de la suppression de l\'utilisateur:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// ===========================================
+// ROUTES ADMIN - Gestion des évaluations
+// ===========================================
+
+// GET - Liste de toutes les évaluations (Admin)
+app.get('/api/evaluations/all', requireAdmin, async (req, res) => {
+    try {
+        const sql = `
+            SELECT id, date_evaluation, direction, service, 
+                   evaluateur_nom, evaluateur_fonction, 
+                   evalue_nom, evalue_fonction, 
+                   categorie, annee, email_n2, status, 
+                   created_at, submitted_at, validated_at
+            FROM evaluations 
+            ORDER BY created_at DESC
+        `;
+        const evaluations = await db.query(sql);
+        res.json(evaluations);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des évaluations:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// DELETE - Supprimer une évaluation (Admin)
+app.delete('/api/evaluations/:id', requireAdmin, async (req, res) => {
+    try {
+        const evalId = req.params.id;
+        
+        // Supprimer l'évaluation (les logs d'audit seront supprimés en cascade)
+        const deleteSql = 'DELETE FROM evaluations WHERE id = ?';
+        const result = await db.query(deleteSql, [evalId]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Évaluation non trouvée' 
+            });
+        }
+        
+        console.log(`✅ Évaluation supprimée: ID ${evalId}`);
+        
+        res.json({ 
+            success: true, 
+            message: 'Évaluation supprimée avec succès' 
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de la suppression de l\'évaluation:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// ===========================================
+// ROUTES ADMIN - Logs d'audit
+// ===========================================
+
+// GET - Tous les logs d'audit (Admin)
+app.get('/api/audit-logs', requireAdmin, async (req, res) => {
+    try {
+        const sql = `
+            SELECT a.*, u.name as user_name 
+            FROM audit_log a
+            LEFT JOIN users u ON a.user_id = u.id
+            ORDER BY a.created_at DESC
+            LIMIT 500
+        `;
+        const logs = await db.query(sql);
+        res.json(logs);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des logs:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// ===========================================
+// ROUTES ADMIN - Configuration
+// ===========================================
+
+// POST - Enregistrer la configuration (Admin)
+app.post('/api/admin/settings', requireAdmin, async (req, res) => {
+    try {
+        // Pour l'instant, retourner un succès
+        // Dans une vraie implémentation, sauvegarder dans une table settings
+        console.log('Configuration enregistrée:', req.body);
+        
+        res.json({ 
+            success: true, 
+            message: 'Configuration enregistrée avec succès' 
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'enregistrement de la configuration:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// GET - Exporter la base de données (Admin)
+app.get('/api/admin/export-database', requireAdmin, async (req, res) => {
+    try {
+        const { exec } = require('child_process');
+        const backupPath = path.join(__dirname, '..', 'database', 'backups', `backup_${Date.now()}.sql`);
+        
+        // Créer le dossier backups s'il n'existe pas
+        const fs = require('fs');
+        const backupDir = path.join(__dirname, '..', 'database', 'backups');
+        if (!fs.existsSync(backupDir)) {
+            fs.mkdirSync(backupDir, { recursive: true });
+        }
+        
+        // Commande mysqldump (à adapter selon votre configuration)
+        const command = `mysqldump -u root formulaire_evaluation > "${backupPath}"`;
+        
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Erreur mysqldump:', error);
+                return res.status(500).json({ 
+                    success: false, 
+                    message: 'Erreur lors de l\'export' 
+                });
+            }
+            
+            console.log(`✅ Base de données exportée: ${backupPath}`);
+            res.download(backupPath);
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'export de la base de données:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
+    }
+});
+
+// POST - Réinitialiser la base de données (Admin)
+app.post('/api/admin/reset-database', requireAdmin, async (req, res) => {
+    try {
+        // ATTENTION: Cette action est très dangereuse!
+        console.warn('⚠️ RÉINITIALISATION DE LA BASE DE DONNÉES DEMANDÉE');
+        
+        // Supprimer toutes les données
+        await db.query('DELETE FROM audit_log');
+        await db.query('DELETE FROM evaluations');
+        await db.query('DELETE FROM users WHERE role != "admin"');
+        
+        console.log('✅ Base de données réinitialisée');
+        
+        res.json({ 
+            success: true, 
+            message: 'Base de données réinitialisée avec succès' 
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors de la réinitialisation:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur' });
     }
 });
 
