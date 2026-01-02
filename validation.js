@@ -148,7 +148,7 @@ function checkAuthentication() {
         localStorage.clear();
         sessionStorage.clear();
         // Redirection immédiate
-        window.location.replace('login.html');
+        window.location.replace('src/pages/login.html');
         return;
     }
     
@@ -158,7 +158,7 @@ function checkAuthentication() {
         showAlert('⚠️ Erreur de session : email non défini. Veuillez vous reconnecter.', 'error');
         setTimeout(() => {
             localStorage.clear();
-            window.location.href = 'login.html';
+            window.location.href = 'src/pages/login.html';
         }, 3000);
         return;
     }
@@ -185,7 +185,7 @@ function logout() {
     localStorage.clear();
     sessionStorage.clear();
     // Redirection vers login (replace pour empêcher retour)
-    window.location.replace('login.html');
+    window.location.replace('src/pages/login.html');
 }
 
 // Initialiser le canvas de signature dans le modal

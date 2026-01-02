@@ -30,7 +30,10 @@ async function verifierBase() {
             console.log('   ➡️  Vous devez exécuter le script reparer-base.sql dans phpMyAdmin\n');
         } else {
             allUsers.forEach(user => {
-                console.log(`   ${user.role === 'N2' ? '📊' : '📝'} ${user.username} (${user.role}) - ${user.name}`);
+                let roleIcon = '📝';
+                if (user.role === 'N2') roleIcon = '📊';
+                if (user.role === 'DRH') roleIcon = '👔';
+                console.log(`   ${roleIcon} ${user.username} (${user.role}) - ${user.name}`);
             });
         }
 

@@ -15,12 +15,46 @@ const signatureCanvases = {
 document.addEventListener('DOMContentLoaded', function() {
     // Vérifier l'authentification
     checkAuthentication();
-    
+
+    // Remplir automatiquement le matricule et l'email N+2 pour le N+1 connecté
+    const role = localStorage.getItem('userRole');
+    const username = localStorage.getItem('userName');
+    if (role === 'N1' && username) {
+        // Appel API pour récupérer les infos du user connecté
+        fetch(`${API_URL}/users/me`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            }
+        })
+        .then(res => res.json())
+        .then(user => {
+            if (user && user.n1_matricule) {
+                const matInput = document.getElementById('n1_matricule');
+                if (matInput) {
+                    matInput.value = user.n1_matricule;
+                    matInput.readOnly = true;
+                    matInput.style.background = '#f5f5f5';
+                }
+            }
+            if (user && user.n2_email) {
+                const n2Input = document.getElementById('emailN2');
+                if (n2Input) {
+                    n2Input.value = user.n2_email;
+                    n2Input.readOnly = true;
+                    n2Input.style.background = '#f5f5f5';
+                }
+            }
+        })
+        .catch((err) => {
+            console.error('Erreur lors de la récupération des infos utilisateur connecté:', err);
+        });
+    }
+
     initializeSignatureCanvases();
     calculateScores();
     loadFromURL();
     updateStatusDisplay();
-    
+
     // Mettre à jour l'année dans la section objectifs quand elle change
     const anneeInput = document.getElementById('annee');
     if (anneeInput) {
@@ -31,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Définir la date d'aujourd'hui par défaut
     const dateEval = document.getElementById('dateEvaluation');
     if (dateEval && !dateEval.value) {
@@ -48,36 +82,36 @@ function checkAuthentication() {
     // Vérifier si on est en mode visualisation (paramètre URL)
     const urlParams = new URLSearchParams(window.location.search);
     const isViewMode = urlParams.has('id');
-    
+
     console.log('🔍 Vérification authentification:', { token: !!token, role, userName, isViewMode });
-    
-    // Si on est en mode visualisation, accepter N1 et N2
-    if (isViewMode && token && (role === 'N1' || role === 'N2')) {
+
+    // Si on est en mode visualisation, accepter N1, N2, DRH et admin
+    if (isViewMode && token && (role === 'N1' || role === 'N2' || role === 'DRH' || role === 'admin')) {
         console.log('✅ Mode visualisation autorisé pour', role);
-        
+
         // Afficher le nom de l'utilisateur
         const userNameElement = document.getElementById('userName');
         if (userNameElement && userName) {
             userNameElement.textContent = `👤 ${userName}`;
             console.log('✅ Nom affiché:', userName);
         }
-        
-        // En mode N2, masquer les boutons de modification
-        if (role === 'N2') {
+
+        // En mode N2, DRH ou admin, masquer les boutons de modification
+        if (role === 'N2' || role === 'DRH' || role === 'admin') {
             setTimeout(() => {
                 const btnSave = document.getElementById('btnSave');
                 const btnSubmit = document.getElementById('btnSubmit');
                 if (btnSave) btnSave.style.display = 'none';
                 if (btnSubmit) btnSubmit.style.display = 'none';
-                
+
                 // Désactiver tous les champs
                 disableFormFields();
             }, 1000);
         }
-        
+
         return;
     }
-    
+
     // Mode création/édition : seul N1 est autorisé
     if (!token || role !== 'N1') {
         console.log('❌ Authentification invalide - Redirection vers login');
@@ -85,7 +119,7 @@ function checkAuthentication() {
         localStorage.clear();
         sessionStorage.clear();
         // Rediriger vers la page de connexion
-        window.location.replace('login.html');
+        window.location.replace('/src/pages/login.html');
         return;
     }
     
@@ -106,7 +140,7 @@ function logout() {
         localStorage.clear();
         sessionStorage.clear();
         // Rediriger vers login (replace pour empêcher retour)
-        window.location.replace('login.html');
+        window.location.replace('/src/pages/login.html');
     }
 }
 
@@ -657,7 +691,7 @@ async function submitToN2() {
         const token = localStorage.getItem('authToken');
         if (!token) {
             showAlert('❌ Session expirée. Veuillez vous reconnecter.', 'error');
-            setTimeout(() => window.location.href = 'login.html', 1500);
+            setTimeout(() => window.location.href = 'src/pages/login.html', 1500);
             return;
         }
 

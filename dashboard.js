@@ -29,7 +29,7 @@ function checkAuthentication() {
         localStorage.clear();
         sessionStorage.clear();
         // Redirection immédiate vers login
-        window.location.replace('login.html');
+        window.location.replace('src/pages/login.html');
         return false;
     }
     
@@ -445,11 +445,30 @@ function displayTodoList(evaluations) {
 // Export all evaluations to Excel
 async function exportAllToExcel() {
     try {
+        // Vérifier que SheetJS est chargé
+        if (typeof XLSX === 'undefined') {
+            showAlert('Bibliothèque Excel non chargée. Veuillez recharger la page.', 'error');
+            return;
+        }
+        
+        showAlert('Export en cours...', 'info');
+        
+        const token = localStorage.getItem('authToken');
         const endpoint = userRole === 'N1' 
             ? `${API_URL}/evaluations/evaluator/${encodeURIComponent(userEmail)}`
             : `${API_URL}/evaluations/pending/${encodeURIComponent(userEmail)}`;
         
-        const response = await fetch(endpoint);
+        const response = await fetch(endpoint, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
         const result = await response.json();
         
         if (result.success) {
@@ -504,7 +523,7 @@ function logout() {
         localStorage.clear();
         sessionStorage.clear();
         // Redirection vers login (replace pour empêcher retour)
-        window.location.replace('login.html');
+        window.location.replace('src/pages/login.html');
     }
 }
 

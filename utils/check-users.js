@@ -7,38 +7,39 @@ async function checkUsers() {
     
     // Simuler des tentatives de login pour vérifier les rôles
     const testUsers = [
-        { email: 'cherif.ba@senico.sn', name: 'Cherif BA' },
-        { email: 'bougar.diouf@senico.sn', name: 'Bougar DIOUF' },
-        { email: 'ousseynou.seck@senico.sn', name: 'Ousseynou SECK' }
+        { username: 'drh', password: 'Test123@', name: 'DRH' },
+        { username: 'admin', password: 'Test123@', name: 'Admin' },
+        { username: 'awa.ndiaye', password: 'test123', name: 'N1' },
+        { username: 'cherif.ba', password: 'test123', name: 'N2' }
     ];
-    
+
     for (const user of testUsers) {
-        console.log(`📧 ${user.name} (${user.email})`);
-        
+        console.log(`👤 Test de connexion : ${user.name} (${user.username})`);
         try {
-            const response = await fetch(`${API_URL}/login`, {
+            const response = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: user.email,
-                    password: 'password123'
+                    username: user.username,
+                    password: user.password
                 })
             });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                console.log(`   ✅ Connecté avec succès`);
-                console.log(`   Rôle: ${result.user.role}`);
-                console.log(`   Nom: ${result.user.name}`);
-                console.log(`   Page: ${result.user.role === 'N1' ? 'formulaire-online.html' : 'validation.html'}`);
+            const data = await response.json();
+            if (response.ok && data.token) {
+                console.log(`   ✅ Connexion réussie`);
+                console.log(`   Rôle: ${data.role}`);
+                console.log(`   Nom: ${data.userName}`);
+                let page = 'formulaire-online.html';
+                if (data.role === 'N2') page = 'validation.html';
+                if (data.role === 'DRH') page = 'drh-evaluations.html';
+                if (data.role === 'admin') page = 'admin-dashboard.html';
+                console.log(`   Page attendue: ${page}`);
             } else {
-                console.log(`   ❌ Échec: ${result.error}`);
+                console.log(`   ❌ Échec: ${data.message || 'Erreur inconnue'}`);
             }
         } catch (error) {
             console.log(`   ❌ Erreur: ${error.message}`);
         }
-        
         console.log('');
     }
     

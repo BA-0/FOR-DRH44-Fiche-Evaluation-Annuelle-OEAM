@@ -1,0 +1,706 @@
+@media (max-width: 900px) {
+    .drh-filters, .filters-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+    .export-btns {
+        margin-left: 0 !important;
+        justify-content: flex-start !important;
+    }
+    .drh-eval-table th, .drh-eval-table td {
+        font-size: 14px;
+        padding: 10px 6px;
+    }
+    .drh-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .drh-eval-table, .drh-eval-table thead, .drh-eval-table tbody, .drh-eval-table th, .drh-eval-table td, .drh-eval-table tr {
+        display: block;
+        width: 100%;
+    }
+    .drh-eval-table thead {
+        display: none;
+    }
+    .drh-eval-table tr {
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px #0001;
+        border-radius: 12px;
+        background: #fff;
+        padding: 10px 0;
+    }
+    .drh-eval-table td {
+        padding: 8px 12px;
+        text-align: left;
+        position: relative;
+        min-width: unset;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .drh-eval-table td:before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #388e3c;
+        min-width: 110px;
+        display: inline-block;
+    }
+    .drh-eval-table td:last-child {
+        flex-direction: row;
+        gap: 8px;
+        min-width: unset;
+    }
+}
+.drh-avatar {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.1rem;
+    border-radius: 50%;
+    margin-right: 10px;
+    box-shadow: 0 2px 8px #43a04722;
+    letter-spacing: 1px;
+    border: 2px solid #fff;
+}
+.drh-eval-table th, .drh-eval-table td {
+    vertical-align: middle;
+}
+.drh-eval-table td {
+    font-size: 15.5px;
+    color: #222;
+}
+.drh-eval-table th {
+    font-size: 16px;
+    font-weight: 800;
+    background: #388e3c;
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+    border-bottom: 2px solid #2e7031;
+}
+.status-badge.status-validated, .badge-success {
+    background: #43a047;
+    color: #fff;
+}
+.status-badge.status-submitted, .badge-warning {
+    background: #f39c12;
+    color: #fff;
+}
+.status-badge.status-draft, .badge-draft {
+    background: #bdbdbd;
+    color: #fff;
+}
+.status-badge.status-retard {
+    background: #e53935;
+    color: #fff;
+}
+.drh-eval-table tr {
+    transition: box-shadow 0.2s, background 0.2s;
+}
+.drh-eval-table tr:hover {
+    background: #e0f2f1;
+    box-shadow: 0 4px 16px #0002;
+}
+.drh-eval-table td:last-child {
+    min-width: 120px;
+}
+.drh-eval-table td .drh-action-btn {
+    min-width: 60px;
+    justify-content: center;
+}
+/* Modernisation section filtres/tableau DRH */
+.drh-eval-header h1 {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.drh-badge {
+    background: #0074d9;
+    color: #fff;
+    border-radius: 8px;
+    padding: 2px 10px;
+    font-size: 1rem;
+    margin-left: 8px;
+}
+.export-btns .btn-export-excel {
+    background: #27ae60;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 15px;
+    box-shadow: 0 2px 8px #0001;
+    transition: background 0.2s;
+}
+.export-btns .btn-export-excel:hover {
+    background: #219150;
+}
+.export-btns .btn-export-pdf {
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 15px;
+    box-shadow: 0 2px 8px #0001;
+    transition: background 0.2s;
+}
+.export-btns .btn-export-pdf:hover {
+    background: #a93226;
+}
+.drh-eval-table thead {
+    background: #0074d9;
+    color: #fff;
+}
+.drh-eval-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.drh-eval-table th, .drh-eval-table td {
+    padding: 14px 12px;
+    font-size: 15px;
+}
+.badge-success {
+    background: #27ae60;
+    color: #fff;
+    border-radius: 8px;
+    padding: 2px 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.badge-warning {
+    background: #f39c12;
+    color: #fff;
+    border-radius: 8px;
+    padding: 2px 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.badge-draft {
+    background: #bdbdbd;
+    color: #fff;
+    border-radius: 8px;
+    padding: 2px 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.btn-view {
+    background: #2980b9;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 4px 12px;
+    margin-right: 4px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.2s;
+}
+.btn-view:hover {
+    background: #1c5d8c;
+}
+.btn-pdf {
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.2s;
+}
+.btn-pdf:hover {
+    background: #a93226;
+}
+.drh-action-btn {
+    background: #e0f2f1;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #388e3c;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 1px 4px #0001;
+    margin-right: 4px;
+}
+.drh-action-btn:hover {
+    background: #43a047;
+    color: #fff;
+}
+.drh-action-pdf {
+    background: #ffebee;
+    color: #e53935;
+}
+.drh-action-pdf:hover {
+    background: #e53935;
+    color: #fff;
+}
+.drh-filters {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 24px;
+    align-items: center;
+    background: #e0f2f1;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px #0001;
+    padding: 18px 22px;
+    flex-wrap: wrap;
+    border: 1.5px solid #b2dfdb;
+}
+.drh-filters input, .drh-filters select {
+    padding: 12px 16px 12px 36px;
+    border-radius: 8px;
+    border: 1px solid #b2dfdb;
+    font-size: 15px;
+    background: #fff url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/icons/search.svg') no-repeat 10px center/18px 18px;
+    box-shadow: 0 1px 4px #0001;
+    transition: border 0.2s;
+}
+.drh-filters input:focus, .drh-filters select:focus {
+    border: 1.5px solid #388e3c;
+    outline: none;
+}
+#exportBtn {
+    background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px #0002;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+#exportBtn:hover {
+    background: linear-gradient(135deg, #388e3c 0%, #43a047 100%);
+    box-shadow: 0 4px 16px #0002;
+}
+#evaluationsTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    margin-top: 10px;
+    background: transparent;
+}
+#evaluationsTable th, #evaluationsTable td {
+    padding: 14px 12px;
+    border-bottom: none;
+    text-align: left;
+    font-size: 15px;
+}
+#evaluationsTable th {
+    background: #388e3c;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 2px solid #2e7031;
+}
+#evaluationsTable tr {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0001;
+    transition: box-shadow 0.2s, background 0.2s;
+}
+#evaluationsTable tr:hover {
+    background: #e0f2f1;
+    box-shadow: 0 4px 16px #0002;
+}
+.status-badge {
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    display: inline-block;
+    box-shadow: 0 1px 4px #0001;
+    letter-spacing: 0.5px;
+}
+.status-draft { background: #bdbdbd; }
+.status-submitted { background: #f39c12; }
+.status-validated { background: #43a047; }
+.status-retard { background: #e53935; }
+.drh-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #43a047 0%, #b2dfdb 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    box-shadow: 0 1px 4px #0001;
+    letter-spacing: 1px;
+}
+.drh-action-btn {
+    background: #e0f2f1;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #388e3c;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    box-shadow: 0 1px 4px #0001;
+}
+.drh-action-btn:hover {
+    background: #43a047;
+    color: #fff;
+}
+.drh-action-pdf {
+    background: #ffebee;
+    color: #e53935;
+}
+.drh-action-pdf:hover {
+    background: #e53935;
+    color: #fff;
+}
+.drh-evaluations-container h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #222;
+    margin-bottom: 18px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.drh-evaluations-container h2 {
+    font-size: 1.3rem;
+    color: #388e3c;
+    font-weight: 700;
+    margin-top: 24px;
+    margin-bottom: 10px;
+}
+body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e8f5e9 100%);
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+.drh-tabs-container {
+    margin-top: 32px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #f5f6fa;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 4px 24px #0001;
+    padding: 0 12px;
+}
+.drh-tabs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    background: transparent;
+    border-radius: 18px 18px 0 0;
+    box-shadow: none;
+    padding: 0;
+    min-width: unset;
+    width: auto;
+    justify-content: flex-start;
+    margin-bottom: 0;
+}
+.drh-tab {
+    background: none;
+    border: none;
+    color: #388e3c;
+    font-size: 1.13rem;
+    font-weight: 600;
+    padding: 18px 36px 14px 36px;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s, box-shadow 0.2s;
+    border-radius: 18px 18px 0 0;
+    text-align: center;
+    margin: 0 2px;
+    box-shadow: none;
+    outline: none;
+    border-bottom: 3px solid transparent;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+.drh-tab:hover {
+    background: #e8f5e9;
+    color: #1b5e20;
+    box-shadow: 0 2px 8px #0001;
+}
+.drh-tab.active {
+    color: #e53935;
+    background: #fff;
+    box-shadow: 0 -2px 8px #0001;
+    border-bottom: 3px solid #e53935;
+    z-index: 2;
+}
+.drh-tab-content {
+    display: none;
+    padding: 32px 0 0 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeInTab 0.5s;
+}
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: none; }
+}
+.drh-evaluations-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    padding: 36px 32px 44px 32px;
+}
+.drh-badge {
+    background: #388e3c;
+    color: #fff;
+    border-radius: 8px;
+    padding: 4px 14px;
+    font-size: 16px;
+    margin-left: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+/* --- Améliorations tableau de bord DRH --- */
+.drh-tabs-container {
+    margin-top: 32px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    background: transparent;
+    box-shadow: none;
+    position: static;
+    left: unset;
+    right: unset;
+    z-index: 1;
+}
+.drh-tabs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    background: #f5f6fa;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 2px 8px #0001;
+    padding: 0 0 0 0;
+    min-width: unset;
+    width: auto;
+    justify-content: flex-start;
+    margin-bottom: 0;
+}
+/* Menu horizontal DRH */
+.drh-tabs-container {
+    margin-top: 32px;
+}
+.drh-tabs-container {
+    max-width: 1200px;
+}
+.drh-tabs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+.drh-tabs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0 0 0 0;
+    min-width: unset;
+    width: 100%;
+    justify-content: flex-start;
+.drh-tab {
+    background: none;
+    border: none;
+    color: #4a8c5e;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 16px 32px 12px 32px;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+    margin: 0;
+    box-shadow: none;
+    outline: none;
+    border-bottom: 2px solid transparent;
+}
+.drh-tab.active {
+    color: #e53935;
+    background: #fff;
+    box-shadow: 0 -2px 8px #0001;
+    border-bottom: 2px solid #e53935;
+}
+    position: relative;
+}
+.drh-dashboard-title {
+    font-size: 16px;
+    color: #4A9D5F;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.drh-dashboard-value {
+    font-size: 38px;
+    font-weight: 800;
+    color: #E30613;
+    margin-bottom: 6px;
+    text-align: center;
+}
+.drh-dashboard-icon {
+    font-size: 32px;
+    color: #4A9D5F;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    opacity: 0.18;
+}
+@media (max-width: 900px) {
+    .drh-dashboard-card { min-width: 140px; padding: 18px 10px; }
+    .drh-tabs-container { padding: 0 4px; }
+}
+/* drh-evaluations.css : styles pour l'interface DRH */
+.drh-evaluations-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 32px 24px 40px 24px;
+}
+.drh-badge {
+    background: #4A9D5F;
+    color: #fff;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 16px;
+    margin-left: 10px;
+}
+.drh-filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: center;
+}
+.drh-filters input, .drh-filters select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    font-size: 15px;
+.drh-tabs-container {
+    margin-top: 0;
+    width: 100vw;
+    max-width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background: #f5f6fa;
+    box-shadow: 0 2px 8px #0001;
+    z-index: 2;
+}
+}
+#exportBtn {
+    background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 100%);
+    color: #fff;
+    border: none;
+.drh-tab-content {
+    display: none;
+    padding: 24px 0 0 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+#exportBtn:hover {
+    background: linear-gradient(135deg, #388e3c 0%, #43a047 100%);
+}
+#evaluationsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: #fafbfc;
+}
+#evaluationsTable th, #evaluationsTable td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+}
+#evaluationsTable th {
+    background: #f3f4f6;
+    font-weight: 600;
+    color: #333;
+}
+.status-badge {
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    display: inline-block;
+}
+.status-draft { background: #bdbdbd; }
+.status-submitted { background: #f39c12; }
+.status-validated { background: #27ae60; }
+#evaluationsTable td button {
+    background: none;
+    border: none;
+    color: #3498db;
+    font-size: 17px;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: color 0.2s;
+}
+#evaluationsTable td button:hover {
+    color: #e74c3c;
+}
+@media (max-width: 900px) {
+    .drh-evaluations-container { padding: 10px; }
+    #evaluationsTable th, #evaluationsTable td { font-size: 13px; }
+}

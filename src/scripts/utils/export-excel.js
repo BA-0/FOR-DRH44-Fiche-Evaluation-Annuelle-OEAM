@@ -3,7 +3,7 @@
 // Helper to show alert (fallback if not defined)
 function showAlertExcel(message, type = 'error') {
     if (typeof showAlert === 'function') {
-        showAlertExcel(message, type);
+        showAlert(message, type);
     } else {
         console.log(`[${type.toUpperCase()}] ${message}`);
         alert(message);

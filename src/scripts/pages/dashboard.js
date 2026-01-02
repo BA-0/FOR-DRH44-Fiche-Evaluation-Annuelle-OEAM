@@ -23,7 +23,7 @@ function checkAuthentication() {
     console.log('Checking auth:', { token: !!token, role, email, name }); // Debug
     
     // Vérification stricte : tous les éléments doivent être présents
-    if (!token || !role || !email) {
+        if (!token || !role || !email) {
         console.log('Authentication failed, redirecting to login');
         // Nettoyer le localStorage pour éviter des données corrompues
         localStorage.clear();
@@ -44,8 +44,16 @@ function checkAuthentication() {
     if (userNameElement) {
         userNameElement.textContent = userName;
     }
-    if (userRoleElement) {
-        userRoleElement.textContent = role === 'N1' ? 'Évaluateur (N+1)' : 'Validateur (N+2)';
+        if (userRoleElement) {
+            if (role === 'N1') {
+                userRoleElement.textContent = 'Évaluateur (N+1)';
+            } else if (role === 'N2') {
+                userRoleElement.textContent = 'Validateur (N+2)';
+            } else if (role === 'DRH') {
+                userRoleElement.textContent = 'Direction RH (DRH)';
+            } else {
+                userRoleElement.textContent = role;
+            }
     }
     
     // Avatar initiales
@@ -307,7 +315,7 @@ function displayQuickActions() {
                 </div>
             </button>
         `;
-    } else {
+    } else if (userRole === 'N2') {
         actionsGrid.innerHTML = `
             <a href="validation.html" class="action-btn">
                 <i class="fas fa-clipboard-check"></i>
@@ -333,6 +341,33 @@ function displayQuickActions() {
                 </div>
             </button>
         `;
+    } else if (userRole === 'DRH') {
+        actionsGrid.innerHTML = `
+            <a href="src/pages/drh-evaluations.html" class="action-btn">
+                <i class="fas fa-list-alt"></i>
+                <div class="action-content">
+                    <h4>Gestion des Évaluations</h4>
+                    <p>Voir et filtrer toutes les évaluations</p>
+                </div>
+            </a>
+            <a href="#" class="action-btn" onclick="event.preventDefault(); showDRHNotifications()">
+                <i class="fas fa-bell"></i>
+                <div class="action-content">
+                    <h4>Notifications & Alertes</h4>
+                    <p>Voir les notifications importantes</p>
+                </div>
+            </a>
+            <button class="action-btn" onclick="exportAllToExcel()">
+                <i class="fas fa-file-excel"></i>
+                <div class="action-content">
+                    <h4>Export Excel</h4>
+                    <p>Télécharger toutes les évaluations</p>
+                </div>
+            </button>
+        `;
+        window.showDRHNotifications = function() {
+            alert('Notifications DRH à implémenter.');
+        };
     }
 }
 
@@ -414,6 +449,26 @@ function displayTodoList(evaluations) {
                 action: 'validation.html'
             });
         }
+    } else if (userRole === 'DRH') {
+        // Exemple de todo pour DRH : surveiller les évaluations en retard ou alertes RH
+        const late = evaluations.filter(e => e.status !== 'validated' && new Date(e.created_at) < new Date(Date.now() - 30*24*60*60*1000));
+        if (late.length > 0) {
+            todos.push({
+                icon: 'fa-bell',
+                color: 'danger',
+                text: `${late.length} évaluation(s) en retard`,
+                action: '#'
+            });
+        }
+        const pending = evaluations.filter(e => e.status === 'submitted');
+        if (pending.length > 0) {
+            todos.push({
+                icon: 'fa-clock',
+                color: 'info',
+                text: `${pending.length} en attente de validation`,
+                action: '#'
+            });
+        }
     }
     
     if (todos.length === 0) {
@@ -445,11 +500,33 @@ function displayTodoList(evaluations) {
 // Export all evaluations to Excel
 async function exportAllToExcel() {
     try {
-        const endpoint = userRole === 'N1' 
-            ? `${API_URL}/evaluations/evaluator/${encodeURIComponent(userEmail)}`
-            : `${API_URL}/evaluations/pending/${encodeURIComponent(userEmail)}`;
+        // Vérifier que SheetJS est chargé
+        if (typeof XLSX === 'undefined') {
+            showAlert('Bibliothèque Excel non chargée. Veuillez recharger la page.', 'error');
+            return;
+        }
         
-        const response = await fetch(endpoint);
+        showAlert('Export en cours...', 'info');
+        
+        const token = localStorage.getItem('authToken');
+        let endpoint = `${API_URL}/evaluations`;
+        if (userRole === 'N1') {
+            endpoint = `${API_URL}/evaluations/evaluator/${encodeURIComponent(userEmail)}`;
+        } else if (userRole === 'N2') {
+            endpoint = `${API_URL}/evaluations/pending/${encodeURIComponent(userEmail)}`;
+        } // DRH : toutes les évaluations
+        
+        const response = await fetch(endpoint, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
         const result = await response.json();
         
         if (result.success) {
@@ -500,10 +577,20 @@ function showAlert(message, type = 'success') {
 // Déconnexion
 function logout() {
     if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+        console.log('🚪 Déconnexion en cours...');
+        
         // Nettoyer complètement la session
         localStorage.clear();
         sessionStorage.clear();
-        // Redirection vers login (replace pour empêcher retour)
+        
+        // Supprimer tous les cookies
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+        
+        console.log('✅ Session nettoyée');
+        
+        // Redirection avec replace (empêche le retour arrière)
         window.location.replace('login.html');
     }
 }

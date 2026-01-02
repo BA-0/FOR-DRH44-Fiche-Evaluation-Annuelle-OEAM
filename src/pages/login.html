@@ -218,6 +218,21 @@
     </style>
 </head>
 <body>
+    <script>
+        // ========== NETTOYAGE AUTOMATIQUE DE SESSION ==========
+        // Force l'utilisateur à se reconnecter à chaque visite de la page login
+        console.log('🧹 Nettoyage complet de la session...');
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Supprimer tous les cookies
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+        
+        console.log('✅ Session nettoyée - nouvelle authentification requise');
+    </script>
+    
     <div class="login-container">
         <div class="logo">
             <div class="logo-icon-wrapper">
@@ -230,7 +245,8 @@
         
         <div id="alertContainer"></div>
         
-        <div class="role-selector">
+        <!-- Role Selection - Hidden (Auto-detected) -->
+        <div class="role-selector" style="display: none;">
             <button class="role-btn active" id="btnN1" onclick="selectRole('N1')">
                 <div style="font-size: 24px; margin-bottom: 8px;">👤</div>
                 <strong>N+1</strong>
@@ -297,7 +313,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ username, password, role: selectedRole })
+                    body: JSON.stringify({ username, password })
                 });
                 
                 const data = await response.json();
@@ -321,17 +337,38 @@
                         userId: data.userId
                     }));
                     
-                    // VÉRIFIER LA PREMIÈRE CONNEXION
+                    // VÉRIFIER LA PREMIÈRE CONNEXION (pour tous les rôles incluant admin)
                     if (data.firstLogin === true || data.firstLogin === 1) {
-                        console.log('🔐 Première connexion détectée');
+                        console.log('🔐 Première connexion détectée - Changement de mot de passe requis');
+                        showAlert('🔐 Première connexion : vous devez changer votre mot de passe', 'info');
                         setTimeout(() => {
                             window.location.href = '../../first-login-password-change.html';
-                        }, 1000);
+                        }, 1500);
                     } else {
-                        // Rediriger vers le dashboard
+                        // Rediriger selon le rôle
                         setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1000);
+                            // Vérification du stockage avant redirection
+                            console.log('Stockage local après login:', {
+                                authToken: localStorage.getItem('authToken'),
+                                userRole: localStorage.getItem('userRole'),
+                                userEmail: localStorage.getItem('userEmail'),
+                                userName: localStorage.getItem('userName'),
+                                userId: localStorage.getItem('userId')
+                            });
+                            if (data.role === 'admin') {
+                                console.log('👑 Redirection vers dashboard admin');
+                                window.location.href = '../../admin-dashboard.html';
+                            } else if (data.role === 'N2') {
+                                console.log('✅ Redirection vers validation N2');
+                                window.location.href = '../pages/validation.html';
+                            } else if (data.role === 'DRH') {
+                                console.log('🏢 Redirection vers interface DRH');
+                                window.location.href = '/src/pages/drh-evaluations.html?from=login';
+                            } else {
+                                console.log('👤 Redirection vers dashboard N1');
+                                window.location.href = 'dashboard.html';
+                            }
+                        }, 2000);
                     }
                 } else {
                     showAlert('❌ ' + (data.message || 'Identifiants incorrects'), 'error');
@@ -436,21 +473,21 @@
         // Déconnecter automatiquement l'utilisateur à chaque arrivée sur la page login
         // Cela force une nouvelle authentification à chaque fois
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('🔒 Page de connexion chargée - Déconnexion automatique');
-            
-            // Effacer toutes les données d'authentification
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userId');
-            
-            // Effacer aussi le sessionStorage pour plus de sécurité
-            sessionStorage.clear();
-            
-            console.log('✅ Session nettoyée - Prêt pour une nouvelle connexion');
-            
-            // Empìher le retour en arrière vers les pages protégées
+            // Ne nettoyer la session que si l'utilisateur n'arrive pas d'une redirection après login
+            const params = new URLSearchParams(window.location.search);
+            if (!params.has('from') || params.get('from') !== 'login') {
+                console.log('🔒 Page de connexion chargée - Déconnexion automatique');
+                // Effacer toutes les données d'authentification
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userId');
+                // Effacer aussi le sessionStorage pour plus de sécurité
+                sessionStorage.clear();
+                console.log('✅ Session nettoyée - Prêt pour une nouvelle connexion');
+            }
+            // Empêcher le retour en arrière vers les pages protégées
             window.history.pushState(null, null, window.location.href);
             window.onpopstate = function() {
                 window.history.pushState(null, null, window.location.href);

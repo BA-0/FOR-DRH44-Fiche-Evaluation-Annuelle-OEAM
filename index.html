@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>SENICO SA - Système d'Évaluation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4A9D5F 0%, #6BC17D 50%, #E30613 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading-container {
+            text-align: center;
+            color: white;
+        }
+        .logo-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: white;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+        .logo-wrapper span {
+            font-size: 60px;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 {
+            font-size: 32px;
+            margin: 20px 0 10px;
+            font-weight: 600;
+        }
+        p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+    </style>
+    <script>
+        // Redirection immédiate vers la page de connexion
+        console.log('🏠 Page d\'accueil - Redirection vers login...');
+        
+        // Nettoyer toute session existante
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Rediriger après un court délai pour l'animation
+        setTimeout(() => {
+            window.location.replace('src/pages/login.html');
+        }, 500);
+    </script>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="logo-wrapper">
+            <span>📊</span>
+        </div>
+        <h1>SENICO SA</h1>
+        <p>SÉNÉGALAISE INDUSTRIE COMMERCE</p>
+        <p style="margin-top: 30px;">Système d'Évaluation des Collaborateurs</p>
+        <div class="spinner" style="margin-top: 40px;"></div>
+        <p style="margin-top: 20px; font-size: 14px;">Chargement...</p>
+    </div>
+</body>
+</html>

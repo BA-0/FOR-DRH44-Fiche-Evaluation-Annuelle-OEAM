@@ -82,7 +82,7 @@
     function clearSessionAndRedirect() {
         localStorage.clear();
         sessionStorage.clear();
-        window.location.replace('login.html');
+        window.location.replace('src/pages/login.html');
     }
     
     // Vérification périodique de la session
