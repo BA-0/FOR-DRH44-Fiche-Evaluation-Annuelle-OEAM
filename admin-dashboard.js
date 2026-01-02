@@ -471,11 +471,15 @@ async function saveUser(event) {
     event.preventDefault();
     
     const userId = document.getElementById('userId').value;
+<<<<<<< HEAD
     const role = document.getElementById('role').value;
+=======
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
     const userData = {
         username: document.getElementById('username').value,
         name: document.getElementById('fullName').value,
         email: document.getElementById('email').value,
+<<<<<<< HEAD
         role: role,
         is_active: parseInt(document.getElementById('isActive').value)
     };
@@ -484,6 +488,12 @@ async function saveUser(event) {
     userData.n1_matricule = document.getElementById('n1_matricule').value || null;
     userData.n2_email = document.getElementById('n2_email').value || null;
 
+=======
+        role: document.getElementById('role').value,
+        is_active: parseInt(document.getElementById('isActive').value)
+    };
+    
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
     const password = document.getElementById('password').value;
     if (password) {
         userData.password = password;

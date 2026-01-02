@@ -85,8 +85,13 @@ function checkAuthentication() {
 
     console.log('🔍 Vérification authentification:', { token: !!token, role, userName, isViewMode });
 
+<<<<<<< HEAD
     // Si on est en mode visualisation, accepter N1, N2, DRH et admin
     if (isViewMode && token && (role === 'N1' || role === 'N2' || role === 'DRH' || role === 'admin')) {
+=======
+    // Si on est en mode visualisation, accepter N1, N2 et DRH
+    if (isViewMode && token && (role === 'N1' || role === 'N2' || role === 'DRH')) {
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
         console.log('✅ Mode visualisation autorisé pour', role);
 
         // Afficher le nom de l'utilisateur
@@ -96,8 +101,13 @@ function checkAuthentication() {
             console.log('✅ Nom affiché:', userName);
         }
 
+<<<<<<< HEAD
         // En mode N2, DRH ou admin, masquer les boutons de modification
         if (role === 'N2' || role === 'DRH' || role === 'admin') {
+=======
+        // En mode N2 ou DRH, masquer les boutons de modification
+        if (role === 'N2' || role === 'DRH') {
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
             setTimeout(() => {
                 const btnSave = document.getElementById('btnSave');
                 const btnSubmit = document.getElementById('btnSubmit');
@@ -320,6 +330,7 @@ function collectFormData() {
         direction: document.getElementById('direction').value,
         service: document.getElementById('service').value,
         evaluateurNom: document.getElementById('evaluateurNom').value,
+        evaluateurMatricule: document.getElementById('evaluateurMatricule')?.value || '',
         evaluateurFonction: document.getElementById('evaluateurFonction').value,
         evalueNom: document.getElementById('evalueNom').value,
         evalueFonction: document.getElementById('evalueFonction').value,
@@ -345,30 +356,30 @@ function collectFormData() {
                     document.getElementById('pa3')?.value || ''
                 ],
                 axesProgres: [
-                    document.getElementById('axe1')?.value || '',
-                    document.getElementById('axe2')?.value || '',
-                    document.getElementById('axe3')?.value || ''
+                    document.getElementById('ap1')?.value || '',
+                    document.getElementById('ap2')?.value || '',
+                    document.getElementById('ap3')?.value || ''
                 ]
             },
             evalue: {
                 reussites: [
-                    document.getElementById('reussite1')?.value || '',
-                    document.getElementById('reussite2')?.value || '',
-                    document.getElementById('reussite3')?.value || ''
+                    document.getElementById('re1')?.value || '',
+                    document.getElementById('re2')?.value || '',
+                    document.getElementById('re3')?.value || ''
                 ],
                 difficultes: [
-                    document.getElementById('difficulte1')?.value || '',
-                    document.getElementById('difficulte2')?.value || '',
-                    document.getElementById('difficulte3')?.value || ''
+                    document.getElementById('di1')?.value || '',
+                    document.getElementById('di2')?.value || '',
+                    document.getElementById('di3')?.value || ''
                 ],
                 souhaits: [
-                    document.getElementById('souhait1')?.value || '',
-                    document.getElementById('souhait2')?.value || '',
-                    document.getElementById('souhait3')?.value || ''
+                    document.getElementById('sw1')?.value || '',
+                    document.getElementById('sw2')?.value || '',
+                    document.getElementById('sw3')?.value || ''
                 ]
             }
-        },
-        scores: {
+        }
+    };
             scoreN1: document.getElementById('scoreN1').textContent,
             scoreN2: document.getElementById('scoreN2').textContent,
             scoreFinal: document.getElementById('scoreFinal').textContent,
@@ -790,6 +801,7 @@ async function loadEvaluation(id) {
             document.getElementById('direction').value = data.direction || '';
             document.getElementById('service').value = data.service || '';
             document.getElementById('evaluateurNom').value = data.evaluateurNom || '';
+            document.getElementById('evaluateurMatricule').value = data.evaluateurMatricule || '';
             document.getElementById('evaluateurFonction').value = data.evaluateurFonction || '';
             document.getElementById('evalueNom').value = data.evalueNom || '';
             document.getElementById('evalueFonction').value = data.evalueFonction || '';

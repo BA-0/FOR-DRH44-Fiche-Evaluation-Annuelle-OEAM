@@ -359,6 +359,7 @@ function displayEvaluations() {
         // Gérer les deux formats (snake_case de l'API et camelCase)
         const evalueNom = evaluation.evalue_nom || evaluation.evalueNom || 'N/A';
         const evaluateurNom = evaluation.evaluateur_nom || evaluation.evaluateurNom || 'N/A';
+        const evaluateurMatricule = evaluation.evaluateurMatricule || '';
         const evalueFonction = evaluation.evalue_fonction || evaluation.evalueFonction || 'N/A';
         const direction = evaluation.direction || 'N/A';
         const service = evaluation.service || 'N/A';
@@ -378,6 +379,8 @@ function displayEvaluations() {
                     <div class="eval-detail">
                         <div class="eval-detail-label">Évaluateur (N+1)</div>
                         <div class="eval-detail-value">${evaluateurNom}</div>
+                        <div class="eval-detail-label">Matricule N+1</div>
+                        <div class="eval-detail-value">${evaluateurMatricule}</div>
                     </div>
                     <div class="eval-detail">
                         <div class="eval-detail-label">Fonction</div>
@@ -566,7 +569,7 @@ async function loadSignaturesForValidation(id, evalueNom, evaluateurNom, evalueF
                     <strong>Fonction :</strong> ${evalueFonction}
                 </div>
                 <div>
-                    <strong>Évaluateur (N+1) :</strong> ${evaluateurNom}
+                    <strong>Évaluateur (N+1) :</strong> ${evaluateurNom} <span style="margin-left:18px;"><strong>Matricule :</strong> ${evaluateurMatricule}</span>
                 </div>
                 <div>
                     <strong>Direction :</strong> ${direction}

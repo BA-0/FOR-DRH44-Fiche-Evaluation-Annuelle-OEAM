@@ -280,7 +280,11 @@ app.get('/api/evaluations/all', requireAdmin, async (req, res) => {
     try {
         const sql = `
             SELECT id, date_evaluation, direction, service, 
+<<<<<<< HEAD
                    evaluateur_nom, evaluateur_fonction, 
+=======
+                   evaluateur_nom, evaluateur_matricule, evaluateur_fonction, 
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
                    evalue_nom, evalue_fonction, 
                    categorie, annee, email_n2, status, 
                    created_at, submitted_at, validated_at
@@ -572,11 +576,11 @@ app.post('/api/evaluations', async (req, res) => {
         
         const sql = `
             INSERT INTO evaluations (
-                date_evaluation, direction, service, evaluateur_nom, evaluateur_fonction,
+                date_evaluation, direction, service, evaluateur_nom, evaluateur_matricule, evaluateur_fonction,
                 evalue_nom, evalue_fonction, categorie, annee, email_n2,
                 objectifs, competences, scores, observations, signatures,
                 status, created_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         
         const params = [
@@ -584,6 +588,7 @@ app.post('/api/evaluations', async (req, res) => {
             evaluation.direction || '',
             evaluation.service || '',
             evaluation.evaluateurNom || '',
+            evaluation.evaluateurMatricule || '',
             evaluation.evaluateurFonction || '',
             evaluation.evalueNom || '',
             evaluation.evalueFonction || '',
@@ -626,6 +631,7 @@ app.put('/api/evaluations/:id', async (req, res) => {
                 direction = ?,
                 service = ?,
                 evaluateur_nom = ?,
+                evaluateur_matricule = ?,
                 evaluateur_fonction = ?,
                 evalue_nom = ?,
                 evalue_fonction = ?,
@@ -817,7 +823,10 @@ app.get('/api/users', requireAdmin, async (req, res) => {
 
 // POST - Créer un nouvel utilisateur (Admin)
 app.post('/api/users', requireAdmin, async (req, res) => {
+<<<<<<< HEAD
     console.log('Données reçues pour création user:', req.body);
+=======
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
     try {
         const { username, password, name, email, role, is_active } = req.body;
         
@@ -844,6 +853,7 @@ app.post('/api/users', requireAdmin, async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         
         // Insérer le nouvel utilisateur
+<<<<<<< HEAD
 const insertSql = `
     INSERT INTO users (username, password, name, email, role, is_active, first_login, n1_matricule, n2_email)
     VALUES (?, ?, ?, ?, ?, ?, TRUE, ?, ?)
@@ -858,6 +868,21 @@ const result = await db.query(insertSql, [
     (typeof req.body.n1_matricule !== 'undefined' ? req.body.n1_matricule : null),
     (typeof req.body.n2_email !== 'undefined' ? req.body.n2_email : null)
 ]);
+=======
+        const insertSql = `
+            INSERT INTO users (username, password, name, email, role, is_active, first_login)
+            VALUES (?, ?, ?, ?, ?, ?, TRUE)
+        `;
+        
+        const result = await db.query(insertSql, [
+            username, 
+            hashedPassword, 
+            name, 
+            email, 
+            role, 
+            is_active !== undefined ? is_active : 1
+        ]);
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
         
         console.log(`✅ Utilisateur créé: ${username} (${role})`);
         
@@ -899,6 +924,7 @@ app.put('/api/users/:id', requireAdmin, async (req, res) => {
         }
         
         // Construire la requête de mise à jour
+<<<<<<< HEAD
 let updateSql = `
     UPDATE users 
     SET username = ?, name = ?, email = ?, role = ?, is_active = ?, n1_matricule = ?, n2_email = ?
@@ -912,6 +938,13 @@ let params = [
     (typeof req.body.n1_matricule !== 'undefined' ? req.body.n1_matricule : null),
     (typeof req.body.n2_email !== 'undefined' ? req.body.n2_email : null)
 ];
+=======
+        let updateSql = `
+            UPDATE users 
+            SET username = ?, name = ?, email = ?, role = ?, is_active = ?
+        `;
+        let params = [username, name, email, role, is_active !== undefined ? is_active : 1];
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
         
         // Si un nouveau mot de passe est fourni
         if (password) {

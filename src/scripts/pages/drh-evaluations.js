@@ -16,7 +16,11 @@ window.addEventListener('DOMContentLoaded', async () => {
         const doc = new jsPDF();
         // Colonnes du tableau
         const columns = [
+<<<<<<< HEAD
             'Évalué', 'Évaluateur', 'Direction', 'Service', 'Statut', 'Date création', 'Score final'
+=======
+            'Évalué', 'Évaluateur', 'Matricule', 'Direction', 'Service', 'Statut', 'Date création', 'Score final'
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
         ];
         // Récupérer les évaluations validées
         const rows = Array.from(document.querySelectorAll('#evaluationsTableBody tr'))
@@ -239,6 +243,10 @@ function renderTable(evaluations) {
         tr.innerHTML = `
             <td>${avatar}${nom}</td>
             <td>${ev.evaluateur_nom || ev.evaluateur || ''}</td>
+<<<<<<< HEAD
+=======
+            <td>${ev.evaluateurMatricule || ''}</td>
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
             <td>${ev.direction || ''}</td>
             <td>${ev.service || ''}</td>
             <td><span class="status-badge status-${ev.status}">${getStatusLabel(ev.status)}</span> ${retard}</td>

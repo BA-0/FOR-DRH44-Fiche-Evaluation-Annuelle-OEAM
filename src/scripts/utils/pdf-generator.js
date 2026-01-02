@@ -69,6 +69,10 @@ async function generatePDF(evaluationId) {
             ['Direction', evaluation.direction],
             ['Service', evaluation.service],
             ['Évaluateur (N+1)', evaluation.evaluateurNom],
+<<<<<<< HEAD
+=======
+            ['Matricule N+1', evaluation.evaluateurMatricule || ''],
+>>>>>>> 51e3eb354d0640d0d66a339493189ef99833fdd3
             ['Fonction N+1', evaluation.evaluateurFonction],
             ['Évalué (N)', evaluation.evalueNom],
             ['Fonction N', evaluation.evalueFonction],

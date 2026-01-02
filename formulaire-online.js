@@ -824,7 +824,19 @@ async function loadEvaluation(id) {
             formStatus = data.status || 'draft';
             
             // Remplir les champs
-            document.getElementById('direction').value = data.direction || '';
+            // Pour le select, vérifier si la valeur existe dans la liste, sinon mettre ""
+            const directionSelect = document.getElementById('direction');
+            if (directionSelect) {
+                let found = false;
+                for (let i = 0; i < directionSelect.options.length; i++) {
+                    if (directionSelect.options[i].value === data.direction) {
+                        directionSelect.selectedIndex = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) directionSelect.selectedIndex = 0;
+            }
             document.getElementById('service').value = data.service || '';
             document.getElementById('evaluateurNom').value = data.evaluateurNom || '';
             document.getElementById('evaluateurFonction').value = data.evaluateurFonction || '';
